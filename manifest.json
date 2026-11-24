@@ -1,0 +1,10 @@
+{
+  "name": "ALKAK ERP — نظام القاق للمحاسبة والمستودعات",
+  "short_name": "ALKAK ERP",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#7B1E3A",
+  "lang": "ar",
+  "dir": "rtl"
+}

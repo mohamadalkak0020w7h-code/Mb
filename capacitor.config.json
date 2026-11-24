@@ -1,0 +1,8 @@
+{
+  "appId": "com.alkak.erp",
+  "appName": "ALKAK ERP",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

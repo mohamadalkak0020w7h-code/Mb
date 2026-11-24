@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#7B1E3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>نظام المهندس للمحاسبة والمستودعات _ القاق ERP</title>
+<style>
+  :root {
+    --maroon: #7B1E3A;
+    --maroon-dark: #5A1228;
+    --maroon-sub: #9B2C4C;
+    --steel: #2B547E;
+    --slate: #34495E;
+    --desktop: #ECEFF1;
+    --card: #FFFFFF;
+    --zebra: #F7F9F9;
+    --input-bg: #FEF9E7;
+    --auto-bg: #EBF5FB;
+    --ok-bg: #D4EFDF;
+    --ok-txt: #145A32;
+    --warn-bg: #FADBD8;
+    --warn-txt: #78281F;
+    --border: #CBD5E1;
+    --text: #17202A;
+    --muted: #566573;
+  }
+  * { box-sizing: border-box; font-family: 'Tahoma', 'Segoe UI', Arial, sans-serif; }
+  body { margin: 0; background: var(--desktop); color: var(--text); font-size: 13px; padding-bottom: 65px; }
+  
+  /* Top App Bar */
+  .app-header {
+    background: linear-gradient(135deg, var(--maroon), var(--maroon-dark));
+    color: #fff;
+    padding: 10px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .app-header-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .app-title { font-size: 15px; font-weight: bold; margin: 0; }
+  .app-dev { font-size: 11px; color: #F9EBEA; background: rgba(255,255,255,0.14); padding: 3px 9px; border-radius: 12px; font-weight: bold; }
+  .app-sub { font-size: 11px; color: #F2D7D5; margin-top: 4px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+
+  /* Ribbon Tabs */
+  .nav-ribbon {
+    display: flex;
+    overflow-x: auto;
+    background: var(--maroon-sub);
+    padding: 6px 8px;
+    gap: 5px;
+    border-bottom: 2px solid var(--maroon-dark);
+    scrollbar-width: thin;
+  }
+  .nav-btn {
+    background: #E5E7E9;
+    color: var(--text);
+    border: 1px solid #99A3A4;
+    border-radius: 4px;
+    padding: 6px 11px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #7F8C8D;
+  }
+  .nav-btn.active {
+    background: var(--steel);
+    color: #fff;
+    border-color: #1B4F72;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4);
+  }
+
+  .container { max-width: 1200px; margin: 12px auto; padding: 0 10px; }
+  .view-section { display: none; }
+  .view-section.active { display: block; }
+
+  /* Panels & Cards */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .panel-hdr {
+    background: var(--steel);
+    color: #fff;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-hdr.maroon { background: var(--maroon); }
+  .panel-body { padding: 12px; }
+
+  /* Launcher Tiles */
+  .tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 9px;
+  }
+  .tile {
+    background: #F8F9F9;
+    border: 1px solid #BFC9CA;
+    border-radius: 6px;
+    padding: 11px 8px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: inset 1px 1px 0 #fff, 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 0.1s, background 0.15s;
+  }
+  .tile:active { transform: scale(0.98); background: #EBF5FB; }
+  .tile.print-tile { background: var(--input-bg); border-color: #D4AC0D; }
+  .tile.auto-tile { background: var(--auto-bg); border-color: #85C1E9; }
+  .tile-ico { font-size: 20px; display: block; margin-bottom: 4px; }
+  .tile-t { font-weight: bold; color: var(--maroon); font-size: 12px; display: block; }
+  .tile-d { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .kpi-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-right: 4px solid var(--maroon);
+    border-radius: 5px;
+    padding: 9px 11px;
+  }
+  .kpi-card.ok { border-right-color: #1E8449; background: var(--ok-bg); }
+  .kpi-lbl { font-size: 11px; color: var(--muted); font-weight: bold; }
+  .kpi-val { font-size: 16px; font-weight: bold; color: var(--maroon); margin-top: 4px; direction: ltr; text-align: right; }
+
+  /* Forms */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .form-group label { display: block; font-size: 11px; font-weight: bold; color: var(--slate); margin-bottom: 3px; }
+  .form-control {
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid #99A3A4;
+    border-radius: 4px;
+    font-size: 13px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-weight: bold;
+  }
+  .form-control[readonly] { background: var(--auto-bg); color: var(--slate); }
+
+  /* Buttons */
+  .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .btn-primary { background: var(--maroon); color: #fff; }
+  .btn-steel { background: var(--steel); color: #fff; }
+  .btn-success { background: #1E8449; color: #fff; }
+  .btn-danger { background: #C0392B; color: #fff; padding: 4px 8px; font-size: 11px; }
+  .btn-gray { background: #D5D8DC; color: var(--text); }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; min-width: 600px; }
+  th { background: var(--slate); color: #fff; padding: 7px 8px; font-size: 11px; text-align: center; white-space: nowrap; }
+  td { padding: 6px 8px; border-bottom: 1px solid #E5E8E8; font-size: 12px; text-align: center; }
+  tr:nth-child(even) td { background: var(--zebra); }
+  .num { direction: ltr; font-weight: bold; }
+  .badge-ok { background: var(--ok-bg); color: var(--ok-txt); padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+  .badge-warn { background: var(--warn-bg); color: var(--warn-txt); padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+
+  /* Footer */
+  .dev-footer {
+    text-align: center;
+    padding: 12px;
+    background: #D5D8DC;
+    color: var(--maroon-dark);
+    font-weight: bold;
+    font-size: 12px;
+    border-top: 2px solid var(--maroon);
+    margin-top: 20px;
+  }
+
+  /* Print Styles */
+  @media print {
+    .app-header, .nav-ribbon, .no-print, .dev-footer { display: none !important; }
+    body { background: #fff; padding: 0; }
+    .container { max-width: 100%; margin: 0; padding: 0; }
+    .panel { border: none; box-shadow: none; }
+    .print-sheet { border: 2px solid var(--maroon); padding: 15px; }
+  }
+</style>
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D9%87%D9%86%D8%AF%D8%B3%20%D9%84%D9%84%D9%85%D8%AD%D8%A7%D8%B3%D8%A8%D8%A9%20%D9%88%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D9%88%D8%AF%D8%B9%D8%A7%D8%AA%20_%20%D8%A7%D9%84%D9%82%D8%A7%D9%82%20ERP%22%2C%22short_name%22%3A%22%D8%A7%D9%84%D9%82%D8%A7%D9%82%20ERP%22%2C%22start_url%22%3A%22.%2Findex.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ECEFF1%22%2C%22theme_color%22%3A%22%237B1E3A%22%2C%22dir%22%3A%22rtl%22%2C%22lang%22%3A%22ar%22%7D">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-top">
+    <h1 class="app-title">❖ نظام المهندس للمحاسبة والمستودعات _ القاق ERP</h1>
+    <span class="app-dev">تطوير المهندس محمد سليم القاق</span>
+  </div>
+  <div class="app-sub">
+    <span id="hdrCoName">المنشأة: غير محددة (يرجى التأسيس من الثوابت)</span>
+    <span id="hdrFiscalYear">السنة المالية: 2026</span>
+    <span id="hdrDbStatus">قاعدة البيانات: متصلة (IndexedDB) ✓</span> <span id="hdrCloudStatus" style="background:rgba(255,255,255,0.14);padding:2px 8px;border-radius:10px;font-size:11px;">☁️ محلي</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;">
+      <span id="hdrUserBadge" style="background:rgba(255,255,255,0.18);padding:2px 8px;border-radius:10px;font-weight:bold;">👤 المدير الرئيسي</span>
+      <button type="button" onclick="openLoginModal()" style="background:#D4AC0D;color:#17202A;border:none;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:bold;cursor:pointer;">تبديل الحساب</button>
+    </span>
+  </div>
+</header>
+
+<nav class="nav-ribbon" id="topNav">
+  <button class="nav-btn active" data-perm="home" onclick="showView('home', this)">🏠 الرئيسية</button>
+  <button class="nav-btn" data-perm="sales" onclick="showView('sales', this)">🧾 فواتير المبيع</button>
+  <button class="nav-btn" data-perm="purch" onclick="showView('purch', this)">📥 فواتير الشراء</button>
+  <button class="nav-btn" data-perm="returns" onclick="showView('returns', this)">🔄 المرتجعات</button>
+  <button class="nav-btn" data-perm="vouchers" onclick="showView('vouchers', this)">💵 السندات</button>
+  <button class="nav-btn" data-perm="journal" onclick="showView('journal', this)">📒 اليومية الآلية</button>
+  <button class="nav-btn" data-perm="parties" onclick="showView('parties', this)">👥 الزبائن والموردون</button>
+  <button class="nav-btn" data-perm="stock" onclick="showView('stock', this)">📦 المواد والمستودع</button>
+  <button class="nav-btn" data-perm="mfg" onclick="showView('mfg', this)">🏭 التصنيع والكلفة</button>
+  <button class="nav-btn" data-perm="coa" onclick="showView('coa', this)">🗂️ دليل الحسابات</button>
+  <button class="nav-btn" data-perm="reports" onclick="showView('reports', this)">📊 القوائم المالية</button>
+  <button class="nav-btn" data-perm="print" onclick="showView('print', this)">🖨️ الطباعة A4</button>
+  <button class="nav-btn" data-perm="currencies" onclick="showView('currencies', this)">💱 العملات والصرف</button>
+  <button class="nav-btn" data-perm="settings" onclick="showView('settings', this)">⚙️ الثوابت والنسخ</button>
+  <button class="nav-btn" data-perm="users" onclick="showView('users', this)">👤 المستخدمون</button>
+  <button class="nav-btn" data-perm="home" onclick="showView('ai', this)">🤖 الذكاء المحاسبي</button>
+  <button class="nav-btn" onclick="showView('about', this)">ℹ️ حول التطبيق</button>
+</nav>
+
+<main class="container">
+
+  <!-- 1. الواجهة الرئيسية -->
+  <section id="view-home" class="view-section active">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-lbl">صافي المبيعات</div><div class="kpi-val" id="kpiSales">0.00</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">صافي المشتريات</div><div class="kpi-val" id="kpiPurch">0.00</div></div>
+      <div class="kpi-card ok"><div class="kpi-lbl">صافي الربح / (الخسارة)</div><div class="kpi-val" id="kpiProfit">0.00</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">السيولة (صندوق + مصرف)</div><div class="kpi-val" id="kpiCash">0.00</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">قيمة المخزون بالتكلفة</div><div class="kpi-val" id="kpiStock">0.00</div></div>
+      <div class="kpi-card ok"><div class="kpi-lbl">توازن القيد المزدوج</div><div class="kpi-val" id="kpiBalance">متزن 100% ✓</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr">[1] نوافذ الإدخال اليومي والفواتير والسندات</div>
+      <div class="panel-body tiles-grid">
+        <div class="tile" onclick="navTo('sales')"><span class="tile-ico">🧾</span><span class="tile-t">فواتير المبيع</span><span class="tile-d">إصدار فواتير المبيعات</span></div>
+        <div class="tile" onclick="navTo('purch')"><span class="tile-ico">📥</span><span class="tile-t">فواتير الشراء</span><span class="tile-d">إدخال فواتير المشتريات</span></div>
+        <div class="tile" onclick="navTo('returns')"><span class="tile-ico">🔄</span><span class="tile-t">المرتجعات</span><span class="tile-d">مرتجع مبيع وشراء</span></div>
+        <div class="tile" onclick="navTo('vouchers')"><span class="tile-ico">💵</span><span class="tile-t">القبض والدفع</span><span class="tile-d">سندات قبض وصرف وقيد</span></div>
+        <div class="tile" onclick="navTo('parties')"><span class="tile-ico">👥</span><span class="tile-t">الزبائن والموردون</span><span class="tile-d">بطاقات الذمم وأول المدة</span></div>
+        <div class="tile" onclick="navTo('stock')"><span class="tile-ico">📦</span><span class="tile-t">المواد والمستودع</span><span class="tile-d">الخامات والإنتاج والتجاري</span></div>
+        <div class="tile" onclick="navTo('mfg')"><span class="tile-ico">🏭</span><span class="tile-t">التصنيع والكلفة</span><span class="tile-d">نماذج BOM وأوامر الإنتاج</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr maroon">[2] التقارير المحاسبية الآلية ونماذج الطباعة A4</div>
+      <div class="panel-body tiles-grid">
+        <div class="tile auto-tile" onclick="navTo('journal')"><span class="tile-ico">📒</span><span class="tile-t">دفتر اليومية الآلي</span><span class="tile-d">القيود المزدوجة المرحلة</span></div>
+        <div class="tile auto-tile" onclick="navTo('coa')"><span class="tile-ico">🗂️</span><span class="tile-t">دليل الحسابات</span><span class="tile-d">شجرة الحسابات والأرصدة</span></div>
+        <div class="tile auto-tile" onclick="navTo('reports')"><span class="tile-ico">⚖️</span><span class="tile-t">ميزان المراجعة</span><span class="tile-d">المجاميع والأرصدة</span></div>
+        <div class="tile auto-tile" onclick="navTo('reports')"><span class="tile-ico">📈</span><span class="tile-t">الأرباح والخسائر</span><span class="tile-d">قائمة الدخل التفصيلية</span></div>
+        <div class="tile auto-tile" onclick="navTo('reports')"><span class="tile-ico">🏛️</span><span class="tile-t">الميزانية العمومية</span><span class="tile-d">الموجودات والمطاليب</span></div>
+        <div class="tile print-tile" onclick="navTo('print')"><span class="tile-ico">🖨️</span><span class="tile-t">طباعة فاتورة A4</span><span class="tile-d">مبيع وشراء بالترويسة</span></div>
+        <div class="tile print-tile" onclick="navTo('print')"><span class="tile-ico">📄</span><span class="tile-t">طباعة كشف حساب</span><span class="tile-d">كشف حساب زبون/مورد</span></div>
+        <div class="tile" onclick="navTo('currencies')"><span class="tile-ico">💱</span><span class="tile-t">العملات والصرف</span><span class="tile-d">العملة الرئيسية وأسعار الصرف</span></div>
+        <div class="tile" onclick="navTo('settings')"><span class="tile-ico">⚙️</span><span class="tile-t">الثوابت والسنوات</span><span class="tile-d">الإقفال والنسخ الاحتياطي</span></div>
+        <div class="tile auto-tile" onclick="navTo('ai')"><span class="tile-ico">🤖</span><span class="tile-t">الذكاء المحاسبي</span><span class="tile-d">اسأل عن الحسابات والقيود</span></div>
+        <div class="tile auto-tile" onclick="exportBackup()"><span class="tile-ico">💾</span><span class="tile-t">نسخة إلى فلاشة / كرت</span><span class="tile-d">حفظ واستعادة البيانات</span></div>
+        <div class="tile auto-tile" onclick="navTo('about')"><span class="tile-ico">ℹ️</span><span class="tile-t">حول التطبيق</span><span class="tile-d">الميزات والتواصل</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. فواتير المبيع -->
+  <section id="view-sales" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إصدار فاتورة مبيع متعددة الأصناف (ترحيل آلي للمستودع والزبون واليومية)</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رقم الفاتورة</label><input type="text" id="sInvNo" class="form-control" placeholder="INV-1001"></div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="sDate" class="form-control"></div>
+          <div class="form-group"><label>الزبون</label><select id="sParty" class="form-control party-select"></select></div>
+          <div class="form-group"><label>طريقة الدفع</label>
+            <select id="sPay" class="form-control">
+              <option value="نقدي (الصندوق)">نقدي (الصندوق)</option>
+              <option value="مصرف / تحويل">مصرف / تحويل</option>
+              <option value="آجل (ذمم)">آجل (ذمم)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>عملة الفاتورة</label><select id="sCurr" class="form-control curr-select" onchange="onInvCurrChange('s')"></select></div>
+          <div class="form-group"><label>سعر الصرف (مقابل الرئيسية)</label><input type="number" id="sRate" class="form-control" value="1" step="any" oninput="calcLine('s')"></div>
+        </div>
+        <div style="background:#F8F9F9;border:1px solid var(--border);border-radius:5px;padding:10px;margin-bottom:10px;">
+          <div style="font-weight:bold;color:var(--maroon);margin-bottom:8px;font-size:12px;">إضافة أصناف الفاتورة:</div>
+          <div class="form-grid">
+            <div class="form-group"><label>المادة</label><select id="sItem" class="form-control item-select" onchange="fillItemPrice('s')"></select></div>
+            <div class="form-group"><label>الكمية</label><input type="number" id="sQty" class="form-control" value="1" min="0.01" step="any" oninput="calcLine('s')"></div>
+            <div class="form-group"><label>سعر المبيع (بعملة الفاتورة)</label><input type="number" id="sPrice" class="form-control" value="0" step="any" oninput="calcLine('s')"></div>
+            <div class="form-group"><label>الحسم</label><input type="number" id="sDisc" class="form-control" value="0" step="any" oninput="calcLine('s')"></div>
+            <div class="form-group"><label>إجمالي السطر</label><input type="text" id="sNet" class="form-control" readonly value="0.00"></div>
+          </div>
+          <button type="button" class="btn btn-steel" onclick="addInvLine('s')">➕ إضافة الصنف للفاتورة</button>
+          <div id="sLinesBox" class="tbl-wrap" style="margin-top:8px;display:none;">
+            <table>
+              <thead><tr><th>المادة</th><th>الكمية</th><th>السعر</th><th>الحسم</th><th>الصافي</th><th>حذف</th></tr></thead>
+              <tbody id="sLinesTbl"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <button class="btn btn-primary" onclick="saveInvoice('sale')">💾 حفظ وترحيل فاتورة المبيع</button>
+          <div id="sTotalBadge" style="font-weight:bold;color:var(--maroon);font-size:14px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">
+        <span>سجل فواتير المبيع المحفوظة</span>
+        <input type="text" id="sSearch" placeholder="بحث برقم الفاتورة أو الزبون..." style="padding:4px 8px;border-radius:4px;border:none;font-size:12px;" oninput="refreshAll()">
+      </div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رقم الفاتورة</th><th>التاريخ</th><th>الزبون</th><th>الدفع</th><th>الأصناف</th><th>العملة</th><th>الضريبة</th><th>الصافي</th><th>بالرئيسية</th><th>طباعة</th><th>حذف</th></tr></thead>
+          <tbody id="tblSales"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. فواتير الشراء -->
+  <section id="view-purch" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إدخال فاتورة شراء متعددة الأصناف (ترحيل آلي للمستودع والمورد واليومية)</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رقم الفاتورة</label><input type="text" id="pInvNo" class="form-control" placeholder="PUR-501"></div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="pDate" class="form-control"></div>
+          <div class="form-group"><label>المورد</label><select id="pParty" class="form-control party-select"></select></div>
+          <div class="form-group"><label>طريقة السداد</label>
+            <select id="pPay" class="form-control">
+              <option value="آجل (ذمم)">آجل (ذمم)</option>
+              <option value="نقدي (الصندوق)">نقدي (الصندوق)</option>
+              <option value="مصرف / تحويل">مصرف / تحويل</option>
+            </select>
+          </div>
+          <div class="form-group"><label>عملة الفاتورة</label><select id="pCurr" class="form-control curr-select" onchange="onInvCurrChange('p')"></select></div>
+          <div class="form-group"><label>سعر الصرف (مقابل الرئيسية)</label><input type="number" id="pRate" class="form-control" value="1" step="any" oninput="calcLine('p')"></div>
+        </div>
+        <div style="background:#F8F9F9;border:1px solid var(--border);border-radius:5px;padding:10px;margin-bottom:10px;">
+          <div style="font-weight:bold;color:var(--maroon);margin-bottom:8px;font-size:12px;">إضافة أصناف فاتورة الشراء:</div>
+          <div class="form-grid">
+            <div class="form-group"><label>المادة</label><select id="pItem" class="form-control item-select" onchange="fillItemPrice('p')"></select></div>
+            <div class="form-group"><label>الكمية</label><input type="number" id="pQty" class="form-control" value="1" min="0.01" step="any" oninput="calcLine('p')"></div>
+            <div class="form-group"><label>سعر الكلفة (بعملة الفاتورة)</label><input type="number" id="pPrice" class="form-control" value="0" step="any" oninput="calcLine('p')"></div>
+            <div class="form-group"><label>الحسم</label><input type="number" id="pDisc" class="form-control" value="0" step="any" oninput="calcLine('p')"></div>
+            <div class="form-group"><label>إجمالي السطر</label><input type="text" id="pNet" class="form-control" readonly value="0.00"></div>
+          </div>
+          <button type="button" class="btn btn-steel" onclick="addInvLine('p')">➕ إضافة الصنف للفاتورة</button>
+          <div id="pLinesBox" class="tbl-wrap" style="margin-top:8px;display:none;">
+            <table>
+              <thead><tr><th>المادة</th><th>الكمية</th><th>السعر</th><th>الحسم</th><th>الصافي</th><th>حذف</th></tr></thead>
+              <tbody id="pLinesTbl"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <button class="btn btn-primary" onclick="saveInvoice('purchase')">💾 حفظ وترحيل فاتورة الشراء</button>
+          <div id="pTotalBadge" style="font-weight:bold;color:var(--maroon);font-size:14px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">
+        <span>سجل فواتير الشراء المحفوظة</span>
+        <input type="text" id="pSearch" placeholder="بحث برقم الفاتورة أو المورد..." style="padding:4px 8px;border-radius:4px;border:none;font-size:12px;" oninput="refreshAll()">
+      </div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رقم الفاتورة</th><th>التاريخ</th><th>المورد</th><th>السداد</th><th>الأصناف</th><th>العملة</th><th>الضريبة</th><th>الصافي</th><th>بالرئيسية</th><th>طباعة</th><th>حذف</th></tr></thead>
+          <tbody id="tblPurch"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. المرتجعات -->
+  <section id="view-returns" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">تسجيل مرتجع مبيع أو مرتجع شراء</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رقم المرتجع</label><input type="text" id="rNo" class="form-control" placeholder="RET-01"></div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="rDate" class="form-control"></div>
+          <div class="form-group"><label>نوع المرتجع</label>
+            <select id="rType" class="form-control" onchange="fillItemPrice('r')">
+              <option value="مرتجع مبيع">مرتجع مبيع</option>
+              <option value="مرتجع شراء">مرتجع شراء</option>
+            </select>
+          </div>
+          <div class="form-group"><label>الطرف (زبون / مورد)</label><select id="rParty" class="form-control party-select"></select></div>
+          <div class="form-group"><label>التسوية</label>
+            <select id="rPay" class="form-control">
+              <option value="آجل (ذمم)">آجل (ذمم)</option>
+              <option value="نقدي (الصندوق)">نقدي (الصندوق)</option>
+              <option value="مصرف / تحويل">مصرف / تحويل</option>
+            </select>
+          </div>
+          <div class="form-group"><label>المادة</label><select id="rItem" class="form-control item-select" onchange="fillItemPrice('r')"></select></div>
+          <div class="form-group"><label>الكمية المرتجعة</label><input type="number" id="rQty" class="form-control" value="1" step="any"></div>
+          <div class="form-group"><label>السعر</label><input type="number" id="rPrice" class="form-control" value="0" step="any"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveReturn()">💾 حفظ وترحيل المرتجع</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">سجل المرتجعات</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>الرقم</th><th>التاريخ</th><th>النوع</th><th>الطرف</th><th>المادة</th><th>الكمية</th><th>الصافي</th><th>حذف</th></tr></thead>
+          <tbody id="tblReturns"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. السندات والقيود -->
+  <section id="view-vouchers" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">سندات القبض والدفع والمصاريف</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رقم السند</label><input type="text" id="vNo" class="form-control" placeholder="RV-001"></div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="vDate" class="form-control"></div>
+          <div class="form-group"><label>نوع السند</label>
+            <select id="vType" class="form-control">
+              <option value="سند قبض">سند قبض</option>
+              <option value="سند دفع">سند دفع</option>
+            </select>
+          </div>
+          <div class="form-group"><label>الطرف (إن وجد)</label><select id="vParty" class="form-control party-select"></select></div>
+          <div class="form-group"><label>الصندوق / المصرف</label>
+            <select id="vCashAcc" class="form-control">
+              <option value="123001">123001 - الصندوق الرئيسي</option>
+              <option value="123002">123002 - المصرف / البنك</option>
+            </select>
+          </div>
+          <div class="form-group"><label>الحساب المقابل</label><select id="vOppAcc" class="form-control acc-select"></select></div>
+          <div class="form-group"><label>المبلغ</label><input type="number" id="vAmount" class="form-control" value="0" step="any"></div>
+          <div class="form-group"><label>البيان</label><input type="text" id="vDesc" class="form-control" placeholder="شرح العملية"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveVoucher()">💾 حفظ وترحيل السند</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">سجل السندات المالية</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رقم السند</th><th>التاريخ</th><th>النوع</th><th>الطرف</th><th>الحساب المقابل</th><th>المبلغ</th><th>البيان</th><th>حذف</th></tr></thead>
+          <tbody id="tblVouchers"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. دفتر اليومية الآلي -->
+  <section id="view-journal" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إضافة قيد يومية يدوي (تسويات أو قيود افتتاحية متوازنة)</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رقم القيد</label><input type="text" id="mjNo" class="form-control" placeholder="JV-01"></div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="mjDate" class="form-control"></div>
+          <div class="form-group"><label>من حساب (المدين)</label><select id="mjDrAcc" class="form-control acc-select"></select></div>
+          <div class="form-group"><label>إلى حساب (الدائن)</label><select id="mjCrAcc" class="form-control acc-select"></select></div>
+          <div class="form-group"><label>المبلغ</label><input type="number" id="mjAmt" class="form-control" value="0" step="any"></div>
+          <div class="form-group"><label>البيان</label><input type="text" id="mjDesc" class="form-control" placeholder="شرح القيد اليدوي"></div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="saveManualJournal()">💾 ترحيل القيد اليدوي</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr" style="flex-wrap:wrap;gap:8px;">
+        <span>دفتر اليومية العام (الآلي واليدوي)</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <label style="font-size:11px;">من:</label>
+          <input type="date" id="jFromDate" style="padding:3px 6px;border-radius:4px;border:none;font-size:11px;" onchange="renderJournal()">
+          <label style="font-size:11px;">إلى:</label>
+          <input type="date" id="jToDate" style="padding:3px 6px;border-radius:4px;border:none;font-size:11px;" onchange="renderJournal()">
+          <input type="text" id="jSearch" placeholder="بحث برقم المستند أو الحساب..." style="padding:4px 8px;border-radius:4px;border:none;font-size:12px;" oninput="renderJournal()">
+          <button type="button" class="btn btn-gray" style="padding:3px 8px;font-size:11px;" onclick="clearJournalFilter()">الكل</button>
+        </div>
+      </div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>المصدر</th><th>التاريخ</th><th>المستند</th><th>رمز الحساب</th><th>اسم الحساب</th><th>البيان</th><th>مدين</th><th>دائن</th><th>الطرف</th></tr></thead>
+          <tbody id="tblJournal"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. الزبائن والموردون -->
+  <section id="view-parties" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إضافة بطاقة زبون أو مورد</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رمز البطاقة</label><input type="text" id="ptCode" class="form-control" placeholder="C-01"></div>
+          <div class="form-group"><label>اسم الزبون / المورد</label><input type="text" id="ptName" class="form-control" placeholder="الاسم الكامل"></div>
+          <div class="form-group"><label>التصنيف</label>
+            <select id="ptType" class="form-control">
+              <option value="زبون">زبون</option>
+              <option value="مورد">مورد</option>
+            </select>
+          </div>
+          <div class="form-group"><label>الهاتف</label><input type="text" id="ptPhone" class="form-control" placeholder="09xxxxxxxx"></div>
+          <div class="form-group"><label>رصيد أول المدة</label><input type="number" id="ptOpen" class="form-control" value="0" step="any"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveParty()">➕ حفظ البطاقة</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">قائمة الزبائن والموردين وأرصدتهم الحالية</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>الرمز</th><th>الاسم</th><th>التصنيف</th><th>الهاتف</th><th>أول المدة</th><th>الرصيد الحالي</th><th>كشف</th><th>تعديل</th><th>حذف</th></tr></thead>
+          <tbody id="tblParties"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. المواد والمستودع -->
+  <section id="view-stock" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">تعريف أو تعديل بطاقة مادة (مع عملة وسعر صرف خاص للمادة وحد الطلب)</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رمز المادة</label><input type="text" id="itCode" class="form-control" placeholder="ITM-01"></div>
+          <div class="form-group"><label>اسم المادة</label><input type="text" id="itName" class="form-control" placeholder="اسم الصنف"></div>
+          <div class="form-group"><label>النوع</label>
+            <select id="itCat" class="form-control">
+              <option value="تجاري">بضاعة تجارية (ابن)</option>
+              <option value="مادة أولية">مادة أولية / خام (ابن)</option>
+              <option value="منتج تام">منتج مصنّع تام (ابن)</option>
+              <option value="مجموعة أب">📁 مجموعة رئيسية (أب)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>المجموعة / المادة الأب</label>
+            <select id="itParent" class="form-control" onchange="onItemParentChange()">
+              <option value="">-- بدون أب (رئيسية) --</option>
+            </select>
+          </div>
+          <div class="form-group"><label>الوحدة</label><input type="text" id="itUnit" class="form-control" value="قطعة"></div>
+          <div class="form-group"><label>عملة المادة</label><select id="itCurr" class="form-control curr-select" onchange="onItemCurrChange()"></select></div>
+          <div class="form-group"><label>سعر الصرف الخاص بالمادة</label><input type="number" id="itRate" class="form-control" value="1" step="any"></div>
+          <div class="form-group"><label>سعر الكلفة (بعملة المادة)</label><input type="number" id="itCost" class="form-control" value="0" step="any"></div>
+          <div class="form-group"><label>سعر المبيع (بعملة المادة)</label><input type="number" id="itPrice" class="form-control" value="0" step="any"></div>
+          <div class="form-group"><label>كمية أول المدة</label><input type="number" id="itOpen" class="form-control" value="0" step="any"></div>
+          <div class="form-group"><label>حد التنبيه الأدنى (اختياري)</label><input type="number" id="itMin" class="form-control" value="5" step="any"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveItem()">💾 حفظ بطاقة المادة</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">
+        <span>جرد المستودع وحركة المواد (اضغط ✏️ لتعديل سعر الصرف أو الأسعار)</span>
+        <input type="text" id="itSearch" placeholder="بحث باسم أو رمز المادة..." style="padding:4px 8px;border-radius:4px;border:none;font-size:12px;" oninput="refreshAll()">
+      </div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>الرمز</th><th>اسم المادة</th><th>النوع</th><th>العملة</th><th>الصرف</th><th>الكلفة</th><th>المبيع</th><th>الرصيد الحالي</th><th>الحالة</th><th>القيمة (بالرئيسية)</th><th>تعديل</th><th>حذف</th></tr></thead>
+          <tbody id="tblStock"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. التصنيع والكلفة -->
+  <section id="view-mfg" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إصدار أمر تصنيع واحتساب الكلفة (صرف خامات وإدخال إنتاج تام)</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رقم أمر التصنيع</label><input type="text" id="mNo" class="form-control" placeholder="MFG-01"></div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="mDate" class="form-control"></div>
+          <div class="form-group"><label>المنتج التام المصنّع</label><select id="mProd" class="form-control item-select"></select></div>
+          <div class="form-group"><label>الكمية المنتجة</label><input type="number" id="mProdQty" class="form-control" value="1" step="any"></div>
+          <div class="form-group"><label>المادة الأولية المستهلكة</label><select id="mRaw" class="form-control item-select"></select></div>
+          <div class="form-group"><label>كمية الخام المستهلكة</label><input type="number" id="mRawQty" class="form-control" value="1" step="any"></div>
+          <div class="form-group"><label>أجور ومصاريف صناعية</label><input type="number" id="mLabor" class="form-control" value="0" step="any"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveMfgOrder()">🏭 تنفيذ أمر التصنيع وترحيل الكلفة</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">سجل أوامر التصنيع المنفذة</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رقم الأمر</th><th>التاريخ</th><th>المنتج التام</th><th>الكمية</th><th>الخام المستهلك</th><th>كلفة الخام</th><th>أجور ومصاريف</th><th>إجمالي الكلفة</th><th>كلفة الوحدة</th></tr></thead>
+          <tbody id="tblMfg"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. دليل الحسابات -->
+  <section id="view-coa" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إضافة حساب جديد أو تعديل رصيد افتتاحي</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>الحساب الأب (اختياري)</label><select id="acParent" class="form-control" onchange="onCoaParentChange()"><option value="">-- حساب رئيسي (أب) --</option></select></div>
+          <div class="form-group"><label>رمز الحساب</label><input type="text" id="acCode" class="form-control" placeholder="123004"></div>
+          <div class="form-group"><label>اسم الحساب</label><input type="text" id="acName" class="form-control" placeholder="اسم الحساب"></div>
+          <div class="form-group"><label>التصنيف الرئيسي</label>
+            <select id="acGroup" class="form-control">
+              <option value="الموجودات">الموجودات</option>
+              <option value="المطاليب">المطاليب</option>
+              <option value="حقوق الملكية">حقوق الملكية</option>
+              <option value="الإيرادات">الإيرادات</option>
+              <option value="المصاريف">المصاريف</option>
+            </select>
+          </div>
+          <div class="form-group"><label>الطبيعة</label>
+            <select id="acNature" class="form-control">
+              <option value="مدين">مدين</option>
+              <option value="دائن">دائن</option>
+            </select>
+          </div>
+          <div class="form-group"><label>رصيد افتتاحي</label><input type="number" id="acOpen" class="form-control" value="0" step="any"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveAccount()">💾 حفظ الحساب</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">شجرة الحسابات والأرصدة الحالية</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رمز الحساب</th><th>اسم الحساب</th><th>التصنيف</th><th>الطبيعة</th><th>الرصيد الافتتاحي</th><th>الرصيد الحالي</th></tr></thead>
+          <tbody id="tblCoa"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. القوائم والتقارير المالية -->
+  <section id="view-reports" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">
+        <span>ميزان المراجعة بالمجاميع والأرصدة</span>
+        <label style="font-size:11px;cursor:pointer;"><input type="checkbox" id="hideZeroAccountsCb" onchange="refreshAll()"> إخفاء الحسابات الصفرية</label>
+      </div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رمز الحساب</th><th>اسم الحساب</th><th>افتتاحي</th><th>حركة مدين</th><th>حركة دائن</th><th>ختامي مدين</th><th>ختامي دائن</th></tr></thead>
+          <tbody id="tblTB"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">قائمة الأرباح والخسائر والميزانية العمومية</div>
+      <div class="panel-body" id="finStatementsBox"></div>
+    </div>
+  </section>
+
+  <!-- 12. نماذج الطباعة A4 -->
+  <section id="view-print" class="view-section">
+    <div class="panel no-print">
+      <div class="panel-hdr">إعدادات الطباعة وتصميم الفواتير</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>نوع المستند للطباعة</label>
+            <select id="prType" class="form-control" onchange="renderPrintPreview()">
+              <option value="invoice">فاتورة مبيع / شراء</option>
+              <option value="statement">كشف حساب زبون / مورد</option>
+            </select>
+          </div>
+          <div class="form-group" id="prInvBox"><label>اختر الفاتورة</label><select id="prInvSel" class="form-control" onchange="renderPrintPreview()"></select></div>
+          <div class="form-group" id="prTplBox"><label>تصميم الفاتورة</label>
+            <select id="prTemplate" class="form-control" onchange="savePrintTemplateChoice()">
+              <option value="classic">1. النموذج الكلاسيكي الرسمي (A4)</option>
+              <option value="modern">2. النموذج الحديث الفاخر (A4)</option>
+              <option value="thermal">3. إيصال كاشير حراري (80mm)</option>
+            </select>
+          </div>
+          <div class="form-group" id="prPartyBox" style="display:none;"><label>اختر الزبون / المورد</label><select id="prPartySel" class="form-control party-select" onchange="renderPrintPreview()"></select></div>
+        </div>
+        <button class="btn btn-success" onclick="window.print()">🖨️ طباعة المستند الآن</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-body print-sheet" id="printArea"></div>
+    </div>
+  </section>
+
+  <!-- 13. إدارة العملات وأسعار الصرف -->
+  <section id="view-currencies" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إضافة أو تعديل عملة وتحديد العملة الرئيسية</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>رمز العملة (مثل USD, SYP, SAR)</label><input type="text" id="curCode" class="form-control" placeholder="USD"></div>
+          <div class="form-group"><label>اسم العملة</label><input type="text" id="curName" class="form-control" placeholder="دولار أمريكي"></div>
+          <div class="form-group"><label>الرمز المختصر للعرض</label><input type="text" id="curSym" class="form-control" placeholder="$"></div>
+          <div class="form-group"><label>سعر الصرف (كم وحدة من هذه العملة = 1 عملة رئيسية؟)</label><input type="number" id="curRate" class="form-control" value="1" step="any"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <button class="btn btn-primary" onclick="saveCurrency()">💾 حفظ / تحديث العملة</button>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <label style="font-size:12px;font-weight:bold;">العملة الرئيسية المعتمدة:</label>
+            <select id="baseCurrSel" class="form-control curr-select" style="width:auto;" onchange="setBaseCurrency()"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr maroon">جدول العملات المعتمدة وأسعار الصرف (اضغط ✏️ للتعديل السريع)</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>رمز العملة</th><th>اسم العملة</th><th>الاختصار</th><th>سعر الصرف مقابل الرئيسية</th><th>الحالة</th><th>تعديل</th><th>حذف</th></tr></thead>
+          <tbody id="tblCurrencies"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13b. الثوابت والسنوات المالية والنسخ الاحتياطي -->
+  <section id="view-settings" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">بيانات المنشأة والضريبة وتصميم الفواتير الافتراضي</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group"><label>اسم الشركة / المؤسسة</label><input type="text" id="setCoName" class="form-control" placeholder="اكتب اسم شركتك"></div>
+          <div class="form-group"><label>الرقم الضريبي</label><input type="text" id="setTaxNo" class="form-control" placeholder="الرقم الضريبي"></div>
+          <div class="form-group"><label>الهاتف والعنوان</label><input type="text" id="setAddress" class="form-control" placeholder="العنوان ورقم الهاتف"></div>
+          <div class="form-group"><label>نسبة الضريبة (%)</label><input type="number" id="setVatRate" class="form-control" value="15" step="any"></div>
+          <div class="form-group"><label>العملة الرئيسية</label><select id="setCurrency" class="form-control curr-select"></select></div>
+          <div class="form-group"><label>السنة المالية الحالية</label><input type="text" id="setYear" class="form-control" value="2026"></div>
+          <div class="form-group"><label>تصميم الفاتورة الافتراضي</label>
+            <select id="setInvTemplate" class="form-control">
+              <option value="classic">النموذج الكلاسيكي الرسمي (A4)</option>
+              <option value="modern">النموذج الحديث الفاخر (A4)</option>
+              <option value="thermal">إيصال كاشير حراري (80mm)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 حفظ إعدادات الشركة</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr">☁️ المزامنة السحابية الفورية (فتح نفس البيانات على أكثر من هاتف وكمبيوتر)</div>
+      <div class="panel-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>رابط قاعدة بيانات Firebase Realtime Database</label>
+            <input type="url" id="fbUrl" class="form-control" placeholder="https://your-project-default-rtdb.firebaseio.com" dir="ltr">
+          </div>
+          <div class="form-group">
+            <label>معرّف السحابة المشترك (اكتبه نفسه في كل الأجهزة)</label>
+            <input type="text" id="fbRoom" class="form-control" value="alkak_main" dir="ltr">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;">
+          <label style="font-size:12px;font-weight:bold;cursor:pointer;">
+            <input type="checkbox" id="fbEnabled" onchange="saveCloudSettings()"> تفعيل المزامنة التلقائية
+          </label>
+          <button type="button" class="btn btn-primary" onclick="saveCloudSettings();pushToCloud(true)">☁️ حفظ ورفع بياناتي للسحابة</button>
+          <button type="button" class="btn btn-steel" onclick="saveCloudSettings();pullFromCloud(true)">⬇️ جلب البيانات من السحابة الآن</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin:8px 0 0;">
+          عند تفعيل المزامنة، أي فاتورة أو سند يُضاف من أي هاتف أو كمبيوتر يظهر تلقائياً على باقي الأجهزة خلال ثوانٍ.
+        </p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr maroon">النسخ الاحتياطي وإقفال السنة المالية (أرشيف السنوات)</div>
+      <div class="panel-body">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+          <button class="btn btn-steel" onclick="exportBackup()">💾 حفظ نسخة إلى فلاشة / كرت ذاكرة (JSON)</button>
+          <label class="btn btn-gray" style="cursor:pointer;">📂 استعادة نسخة من فلاشة / كرت ذاكرة <input type="file" accept=".json" style="display:none;" onchange="importBackup(event)"></label>
+          <button class="btn btn-success" onclick="closeFiscalYear()">🔄 إقفال السنة وتدوير الأرصدة للسنة الجديدة</button>
+          <button class="btn btn-gray" onclick="openSetupWizard()">🧭 معالج تأسيس الدليل (الأمين / فارغ)</button>
+        </div>
+        <div id="lastBackupNote" style="font-size:12px;color:var(--muted);font-weight:bold;margin-bottom:10px;"></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>السنة المالية المؤرشفة</th><th>صافي المبيعات</th><th>صافي المشتريات</th><th>صافي الربح</th><th>تاريخ الإقفال</th></tr></thead>
+            <tbody id="tblFiscalArchive"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14a. إدارة المستخدمين والصلاحيات -->
+  <section id="view-users" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr">إدارة حساب Gmail المدير والحسابات الفرعية وصلاحياتها</div>
+      <div class="panel-body">
+        <div style="background:#FEF9E7;border:1px solid #D4AC0D;border-radius:6px;padding:10px;margin-bottom:12px;">
+          <div class="form-grid" style="margin-bottom:0;">
+            <div class="form-group"><label>حساب Gmail المدير (يُستخدم لتسجيل دخول كل الحسابات الفرعية)</label><input type="email" id="adminGmailInput" class="form-control" placeholder="example@gmail.com" dir="ltr"></div>
+            <div class="form-group" style="display:flex;align-items:flex-end;"><button type="button" class="btn btn-steel" onclick="saveAdminGmail()">💾 حفظ Gmail المدير</button></div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label>اسم المستخدم (للدخول)</label><input type="text" id="uUsername" class="form-control" placeholder="مثال: sales1"></div>
+          <div class="form-group"><label>الاسم الظاهر</label><input type="text" id="uDisplay" class="form-control" placeholder="مثال: موظف المبيعات"></div>
+          <div class="form-group"><label>كلمة المرور / الرمز</label><input type="text" id="uPass" class="form-control" placeholder="1234"></div>
+          <div class="form-group"><label>نوع الحساب</label>
+            <select id="uRole" class="form-control" onchange="toggleUserPermsBox()">
+              <option value="sub">حساب فرعي (صلاحيات محددة)</option>
+              <option value="admin">مدير (كامل الصلاحيات)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="uPermsBox" style="background:#F8F9F9;border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:12px;">
+          <div style="font-weight:bold;color:var(--maroon);margin-bottom:8px;font-size:12px;">حدد النوافذ والصلاحيات المسموحة لهذا الحساب الفرعي:</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;font-size:12px;">
+            <label><input type="checkbox" class="u-perm-cb" value="home" checked> 🏠 الرئيسية</label>
+            <label><input type="checkbox" class="u-perm-cb" value="sales" checked> 🧾 فواتير المبيع</label>
+            <label><input type="checkbox" class="u-perm-cb" value="purch"> 📥 فواتير الشراء</label>
+            <label><input type="checkbox" class="u-perm-cb" value="returns"> 🔄 المرتجعات</label>
+            <label><input type="checkbox" class="u-perm-cb" value="vouchers"> 💵 السندات</label>
+            <label><input type="checkbox" class="u-perm-cb" value="parties" checked> 👥 الزبائن والموردون</label>
+            <label><input type="checkbox" class="u-perm-cb" value="stock" checked> 📦 المواد والمستودع</label>
+            <label><input type="checkbox" class="u-perm-cb" value="mfg"> 🏭 التصنيع والكلفة</label>
+            <label><input type="checkbox" class="u-perm-cb" value="journal"> 📒 اليومية الآلية</label>
+            <label><input type="checkbox" class="u-perm-cb" value="coa"> 🗂️ دليل الحسابات</label>
+            <label><input type="checkbox" class="u-perm-cb" value="reports"> 📊 القوائم المالية والأرباح</label>
+            <label><input type="checkbox" class="u-perm-cb" value="print" checked> 🖨️ الطباعة A4</label>
+            <label><input type="checkbox" class="u-perm-cb" value="currencies"> 💱 العملات والصرف</label>
+            <label><input type="checkbox" class="u-perm-cb" value="settings"> ⚙️ الثوابت والنسخ</label>
+            <label style="color:#C0392B;font-weight:bold;"><input type="checkbox" class="u-perm-cb" value="canDelete"> 🗑️ صلاحية حذف السجلات</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+          <button type="button" class="btn btn-primary" onclick="saveUserAccount()">💾 حفظ الحساب</button>
+          <label style="font-size:12px;font-weight:bold;cursor:pointer;">
+            <input type="checkbox" id="lockOnStartCb" onchange="toggleLockOnStart()"> طلب تسجيل الدخول تلقائياً عند فتح التطبيق
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="adminAlertsPanel" class="panel" style="display:none;border:2px solid #D4AC0D;">
+      <div class="panel-hdr" style="background:#D4AC0D;color:#17202A;">
+        <span>🔔 تنبيهات المدير الرئيسي (الحسابات المضافة من الأجهزة)</span>
+        <button type="button" class="btn btn-gray" style="padding:2px 8px;font-size:11px;" onclick="clearAdminAlerts()">مسح التنبيهات</button>
+      </div>
+      <div class="panel-body" id="adminAlertsBox" style="font-size:12px;line-height:1.7;"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-hdr maroon">قائمة الحسابات المسجلة (الافتراضي للمدير: admin / 1234)</div>
+      <div class="panel-body tbl-wrap">
+        <table>
+          <thead><tr><th>اسم الدخول</th><th>الاسم</th><th>الحالة</th><th>إيقاف / تفعيل</th><th>النوع</th><th>كلمة المرور</th><th>الصلاحيات</th><th>تعديل</th><th>حذف</th></tr></thead>
+          <tbody id="tblUsers"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13.5 الذكاء الاصطناعي في المحاسبة -->
+  <section id="view-ai" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr maroon">🤖 مساعد الذكاء الاصطناعي في المحاسبة — تحليل فوري واستشارات محاسبية</div>
+      <div class="panel-body">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;padding:10px;">
+          <div style="font-size:12px;color:#334155;">
+            <strong>المستشار المحاسبي الذكي — القاق ERP:</strong> يحلل بيانات شركتك الحالية (الفواتير، الصندوق، المخزون، الذمم، اليومية، الأرباح) ويجيب عن أسئلة المحاسبة والقيود فوراً.
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="btn" onclick="clearAiChat()" style="padding:5px 10px;font-size:12px;">🗑️ مسح المحادثة</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askAiQuick('أعطني ملخص الوضع المالي الحالي للشركة')">📊 ملخص الوضع المالي</button>
+          <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askAiQuick('كم رصيد الصندوق والمصرف والسيولة المتاحة؟')">💵 السيولة والصندوق</button>
+          <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askAiQuick('ما هي قيمة المخزون والمواد المنخفضة؟')">📦 تقييم المخزون</button>
+          <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askAiQuick('كم إجمالي ذمم الزبائن والموردين؟')">👥 أرصدة الذمم</button>
+          <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askAiQuick('هل دفتر اليومية متزن وما هو صافي الربح؟')">⚖️ التوازن والربحية</button>
+          <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askAiQuick('ما هو القيد المحاسبي لفاتورة المبيع والشراء؟')">📒 شرح القيود</button>
+        </div>
+
+        <div id="aiChatBox" style="height:340px;overflow-y:auto;background:#ffffff;border:1px solid #cbd5e1;border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:10px;margin-bottom:10px;">
+          <div style="align-self:flex-start;max-width:88%;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6;color:#0f172a;">
+            <strong>🤖 المساعد المحاسبي الذكي:</strong><br>
+            أهلاً بك! النظام مفرغ وجاهز لبياناتك الجديدة. اسألني أي سؤال عن <strong>المبيعات، المشتريات، المخزون، الصندوق، الذمم، الأرباح، أو القيود المحاسبية</strong> وسأجيبك مباشرة من بيانات التطبيق أو أرشدك محاسبياً.
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="aiQuestionInput" placeholder="اكتب سؤالك المحاسبي هنا... (مثال: كم صافي الربح؟ أو ما قيد المبيع الآجل؟)" style="flex:1;padding:10px 12px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;" onkeydown="if(event.key==='Enter'){sendAiQuestion();}">
+          <button class="btn btn-primary" onclick="sendAiQuestion()" style="padding:10px 18px;font-size:13px;">إرسال ✈️</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. حول التطبيق -->
+  <section id="view-about" class="view-section">
+    <div class="panel">
+      <div class="panel-hdr maroon">ℹ️ حول التطبيق — نظام المهندس للمحاسبة والمستودعات _ القاق ERP</div>
+      <div class="panel-body">
+        <div style="background:linear-gradient(135deg,#7B1E3A,#2B547E);color:#fff;padding:16px;border-radius:6px;text-align:center;margin-bottom:14px;">
+          <div style="font-size:17px;font-weight:bold;margin-bottom:6px;">تم تصميمه بالكامل بإشراف المهندس محمد سليم القاق</div>
+          <div style="font-size:12px;color:#F9EBEA;">نظام محاسبي ومستودعي متكامل يعمل بدقة على الهاتف والكمبيوتر</div>
+        </div>
+
+        <div class="panel" style="margin-bottom:14px;">
+          <div class="panel-hdr">📞 التواصل والدعم الفني</div>
+          <div class="panel-body" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:12px;color:var(--muted);font-weight:bold;">رقم التواصل الخاص بالمهندس محمد سليم القاق:</div>
+              <div style="font-size:18px;font-weight:bold;color:var(--maroon);direction:ltr;text-align:right;margin-top:3px;">0994782834</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <a href="tel:0994782834" class="btn btn-primary" style="text-decoration:none;">📞 اتصال مباشر</a>
+              <a href="https://wa.me/963994782834" target="_blank" rel="noopener noreferrer" class="btn btn-success" style="text-decoration:none;">💬 واتساب</a>
+            </div>
+          </div>
+        </div>
+
+                <div class="panel" style="margin-bottom:0;">
+          <div class="panel-hdr">✨ أبرز ميزات التطبيق</div>
+          <div class="panel-body">
+            <ul style="margin:0;padding-right:20px;line-height:1.9;font-size:13px;">
+              <li><strong>الفواتير والمرتجعات:</strong> إصدار فواتير المبيع والشراء والمرتجعات مع الترحيل الآلي للمستودع والذمم والضريبة.</li>
+              <li><strong>السندات واليومية الآلية:</strong> تسجيل سندات القبض والدفع وتوليد قيود اليومية المزدوجة المتوازنة 100% تلقائياً.</li>
+              <li><strong>إدارة الزبائن والموردين:</strong> بطاقات ذمم متكاملة مع احتساب الرصيد الحالي وكشوف حساب تفصيلية.</li>
+              <li><strong>المستودعات والتصنيع:</strong> متابعة المواد الأولية والإنتاج التام والبضاعة التجارية، وتنفيذ أوامر التصنيع واحتساب كلفة الوحدة.</li>
+              <li><strong>دليل الحسابات والقوائم المالية:</strong> شجرة حسابات قابلة للتعديل، وميزان مراجعة، وقائمة الأرباح والخسائر والميزانية العمومية.</li>
+              <li><strong>الطباعة والنسخ الاحتياطي:</strong> طباعة رسمية بمقاس A4 للفواتير وكشوف الحساب، وحفظ محلي سريع عبر IndexedDB مع التصدير والاستيراد (JSON) وإقفال السنة المالية.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="dev-footer">
+  نظام المهندس للمحاسبة والمستودعات _ القاق ERP  |  إشراف وتطوير المهندس محمد سليم القاق  |  للتواصل: 0994782834
+</footer>
+
+<script>
+const DB_NAME = 'AlQaq_ERP_DB_v1';
+const DB_VER = 1;
+let db;
+let draftLines = { s: [], p: [] };
+
+const DEFAULT_CURRENCIES = [
+  { code: 'USD', name: 'دولار أمريكي', sym: '$', rate: 1 },
+  { code: 'SAR', name: 'ريال سعودي', sym: 'ر.س', rate: 3.75 },
+  { code: 'SYP', name: 'ليرة سورية', sym: 'ل.س', rate: 13000 },
+  { code: 'TRY', name: 'ليرة تركية', sym: '₺', rate: 34 },
+  { code: 'EUR', name: 'يورو', sym: '€', rate: 0.92 }
+];
+
+const ALAMEEN_COA = [
+  { code: '1', name: 'الموجودات (الأصول)', group: 'الموجودات', nature: 'مدين', open: 0, parent: '', isParent: true },
+  { code: '11', name: 'الموجودات الثابتة', group: 'الموجودات', nature: 'مدين', open: 0, parent: '1', isParent: true },
+  { code: '110001', name: 'الأراضي والمباني', group: 'الموجودات', nature: 'مدين', open: 0, parent: '11' },
+  { code: '110002', name: 'الآلات والمعدات', group: 'الموجودات', nature: 'مدين', open: 0, parent: '11' },
+  { code: '110003', name: 'الأثاث والتجهيزات', group: 'الموجودات', nature: 'مدين', open: 0, parent: '11' },
+  { code: '12', name: 'الموجودات المتداولة', group: 'الموجودات', nature: 'مدين', open: 0, parent: '1', isParent: true },
+  { code: '121000', name: 'الزبائن (الذمم المدينة)', group: 'الموجودات', nature: 'مدين', open: 0, parent: '12' },
+  { code: '122001', name: 'مخزون المواد الأولية والخام', group: 'الموجودات', nature: 'مدين', open: 0, parent: '12' },
+  { code: '122002', name: 'مخزون الإنتاج التام والتجاري', group: 'الموجودات', nature: 'مدين', open: 0, parent: '12' },
+  { code: '123001', name: 'الصندوق الرئيسي', group: 'الموجودات', nature: 'مدين', open: 0, parent: '12' },
+  { code: '123002', name: 'المصرف / البنك الجاري', group: 'الموجودات', nature: 'مدين', open: 0, parent: '12' },
+  { code: '123003', name: 'شيكات برسم التحصيل', group: 'الموجودات', nature: 'مدين', open: 0, parent: '12' },
+  { code: '2', name: 'المطاليب وحقوق الملكية', group: 'المطاليب', nature: 'دائن', open: 0, parent: '', isParent: true },
+  { code: '210001', name: 'رأس المال', group: 'حقوق الملكية', nature: 'دائن', open: 0, parent: '2' },
+  { code: '210002', name: 'الأرباح المدورة', group: 'حقوق الملكية', nature: 'دائن', open: 0, parent: '2' },
+  { code: '210003', name: 'جاري الشركاء', group: 'حقوق الملكية', nature: 'دائن', open: 0, parent: '2' },
+  { code: '220000', name: 'الموردون (الذمم الدائنة)', group: 'المطاليب', nature: 'دائن', open: 0, parent: '2' },
+  { code: '230001', name: 'ضريبة القيمة المضافة', group: 'المطاليب', nature: 'دائن', open: 0, parent: '2' },
+  { code: '3', name: 'المصاريف والتكاليف', group: 'المصاريف', nature: 'مدين', open: 0, parent: '', isParent: true },
+  { code: '310001', name: 'المشتريات', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' },
+  { code: '310002', name: 'مرتجع الشراء', group: 'المصاريف', nature: 'دائن', open: 0, parent: '3' },
+  { code: '320001', name: 'الرواتب والأجور', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' },
+  { code: '330001', name: 'الإيجارات والمصاريف الإدارية', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' },
+  { code: '330002', name: 'الكهرباء والماء والاتصالات', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' },
+  { code: '330003', name: 'مصاريف الصيانة والنقل', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' },
+  { code: '4', name: 'الإيرادات', group: 'الإيرادات', nature: 'دائن', open: 0, parent: '', isParent: true },
+  { code: '410001', name: 'المبيعات', group: 'الإيرادات', nature: 'دائن', open: 0, parent: '4' },
+  { code: '410002', name: 'مرتجع المبيع', group: 'الإيرادات', nature: 'مدين', open: 0, parent: '4' },
+  { code: '420001', name: 'إيرادات متنوعة', group: 'الإيرادات', nature: 'دائن', open: 0, parent: '4' }
+];
+const DEFAULT_COA = ALAMEEN_COA;
+const DEFAULT_ACCMAP = {
+  cash: '123001', bank: '123002', customers: '121000', rawStock: '122001', finStock: '122002',
+  suppliers: '220000', vat: '230001', sales: '410001', salesRet: '410002', purch: '310001', purchRet: '310002',
+  salaries: '320001', adminExp: '330001'
+};
+let state = {
+  settings: { coName: '', taxNo: '', address: '', vatRate: 15, currency: 'USD', year: '2026', invTemplate: 'classic', lastBackup: '', fbUrl: 'https://alkak-erp-default-rtdb.firebaseio.com', engMasterFbUrl: 'https://alkak-erp-default-rtdb.firebaseio.com', fbEnabled: true },
+  currencies: JSON.parse(JSON.stringify(DEFAULT_CURRENCIES)),
+  coa: JSON.parse(JSON.stringify(DEFAULT_COA)),
+  parties: [],
+  items: [],
+  invoices: [],
+  returns: [],
+  vouchers: [],
+  mfgOrders: [],
+  fiscalArchive: []
+};
+
+const DEFAULT_USERS = [
+  { username: 'admin', display: 'المدير الرئيسي', pass: '1234', role: 'admin', perms: ['all'] }
+];
+
+function ensureStateDefaults() {
+  if (!state.currencies || !state.currencies.length) state.currencies = JSON.parse(JSON.stringify(DEFAULT_CURRENCIES));
+  if (!state.fiscalArchive) state.fiscalArchive = [];
+  if (!state.adminAlerts) state.adminAlerts = [];
+  if (!state.manualJournals) state.manualJournals = [];
+  if (!state.accMap) state.accMap = Object.assign({}, DEFAULT_ACCMAP);
+  if (state.settings.autoCodes === undefined) state.settings.autoCodes = true;
+  if (!state.users || !state.users.length) state.users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+  if (!state.currentUser) state.currentUser = 'admin';
+  if (state.settings.lockOnStart === undefined) state.settings.lockOnStart = false;
+  if (!state.settings.invTemplate) state.settings.invTemplate = 'classic';
+  if (!state.settings.fbUrl) state.settings.fbUrl = 'https://alkak-erp-default-rtdb.firebaseio.com';
+  if (!state.settings.engMasterFbUrl) state.settings.engMasterFbUrl = 'https://alkak-erp-default-rtdb.firebaseio.com';
+  if (state.settings.fbEnabled === undefined) state.settings.fbEnabled = true;
+  if (!state.currencies.find(c => c.code === state.settings.currency)) {
+    state.settings.currency = state.currencies[0].code;
+  }
+}
+
+function getCurrentUserObj() {
+  ensureStateDefaults();
+  return state.users.find(u => u.username === state.currentUser) || state.users[0];
+}
+
+function hasPerm(perm) {
+  const u = getCurrentUserObj();
+  if (!u || u.role === 'admin') return true;
+  if (perm === 'about') return true;
+  return Array.isArray(u.perms) && u.perms.includes(perm);
+}
+
+function applyPermissionsUI() {
+  const u = getCurrentUserObj();
+  const badge = document.getElementById('hdrUserBadge');
+  if (badge) badge.textContent = '👤 ' + u.display + (u.role === 'admin' ? ' (مدير)' : ' (فرعي)');
+
+  document.querySelectorAll('#topNav .nav-btn').forEach(btn => {
+    const p = btn.getAttribute('data-perm');
+    if (!p) return;
+    btn.style.display = hasPerm(p) ? '' : 'none';
+  });
+
+  document.querySelectorAll('#view-home .tile').forEach(tile => {
+    const oc = tile.getAttribute('onclick') || '';
+    const m = oc.match(/navTo\('([^']+)'\)/);
+    if (m && m[1]) tile.style.display = hasPerm(m[1]) ? '' : 'none';
+  });
+
+  const lockCb = document.getElementById('lockOnStartCb');
+  if (lockCb) lockCb.checked = !!state.settings.lockOnStart;
+
+  if (!hasPerm('reports')) {
+    const kp = document.getElementById('kpiProfit');
+    if (kp) kp.textContent = '***';
+  }
+}
+
+
+function openSetupWizard() {
+  document.getElementById('wizAdminGmail').value = state.settings.adminGmail || '';
+  const adm = (state.users || []).find(u => u.username === 'admin');
+  document.getElementById('wizAdminPass').value = adm ? adm.pass : '';
+  document.getElementById('wizCoName').value = state.settings.coName || '';
+  document.getElementById('wizCurr').value = state.settings.currency || 'USD';
+  document.getElementById('wizVat').value = state.settings.vatRate !== undefined ? state.settings.vatRate : 0;
+  document.getElementById('wizYear').value = state.settings.year || '2026';
+  document.getElementById('wizAutoCodes').checked = state.settings.autoCodes !== false;
+  document.getElementById('erpSetupWizardModal').style.display = 'flex';
+}
+
+function switchWizardToLogin() {
+  document.getElementById('erpSetupWizardModal').style.display = 'none';
+  openLoginModal(false);
+}
+
+function finishSetupWizard() {
+  const gm = document.getElementById('wizAdminGmail').value.trim().toLowerCase();
+  const admPass = document.getElementById('wizAdminPass').value.trim();
+  if (!gm || !gm.includes('@')) return showErpToast('يرجى إدخال بريد Gmail صحيح للمدير');
+  if (!admPass || admPass.length < 3) return showErpToast('يرجى إدخال كلمة سر للمدير (3 أحرف على الأقل)');
+
+  const coName = document.getElementById('wizCoName').value.trim();
+  const curr = document.getElementById('wizCurr').value;
+  const vat = parseFloat(document.getElementById('wizVat').value) || 0;
+  const year = document.getElementById('wizYear').value.trim() || '2026';
+  const mode = document.querySelector('input[name="wizCoaMode"]:checked')?.value || 'alameen_trade';
+  const autoCodes = document.getElementById('wizAutoCodes').checked;
+  const digits = parseInt(document.getElementById('wizDigits').value) || 6;
+
+  state.settings.adminGmail = gm;
+  state.settings.fbRoom = gmailToRoom(gm);
+  state.settings.coName = coName;
+  state.settings.currency = curr;
+  state.settings.vatRate = vat;
+  state.settings.year = year;
+  state.settings.autoCodes = autoCodes;
+  state.settings.codeDigits = digits;
+  state.settings.initialized = true;
+
+  // Save admin password
+  ensureStateDefaults();
+  const adm = state.users.find(u => u.username === 'admin');
+  if (adm) adm.pass = admPass;
+  state.currentUser = 'admin';
+
+  if (mode === 'empty') {
+    state.coa = [];
+  } else {
+    state.coa = JSON.parse(JSON.stringify(ALAMEEN_COA));
+    if (mode === 'alameen_ind') {
+      state.coa.push(
+        { code: '320002', name: 'أجور عمال الإنتاج والتصنيع', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' },
+        { code: '330004', name: 'مصاريف تشغيل وصيانة الآلات', group: 'المصاريف', nature: 'مدين', open: 0, parent: '3' }
+      );
+    } else if (mode === 'alameen_srv') {
+      state.coa.push(
+        { code: '410003', name: 'إيرادات العقود والخدمات', group: 'الإيرادات', nature: 'دائن', open: 0, parent: '4' }
+      );
+    }
+    state.accMap = Object.assign({}, DEFAULT_ACCMAP);
+  }
+  document.getElementById('erpSetupWizardModal').style.display = 'none';
+  saveState();
+  showErpToast('تم إنشاء حساب المدير وربط Gmail وتأسيس الشركة ✓');
+}
+
+function getNextAutoCode(type) {
+  if (state.settings.autoCodes === false) return '';
+  const padLen = (state.settings.codeDigits || 6) >= 8 ? 5 : ((state.settings.codeDigits || 6) <= 4 ? 2 : 4);
+  if (type === 'item') return String(10001 + state.items.length);
+  if (type === 'customer') return '121' + String(state.parties.filter(p => p.type === 'زبون').length + 1).padStart(padLen, '0');
+  if (type === 'supplier') return '22' + String(state.parties.filter(p => p.type === 'مورد').length + 1).padStart(padLen, '0');
+  return '';
+}
+function gmailToRoom(email) {
+  return email.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
+
+function saveAdminGmail() {
+  const gm = document.getElementById('adminGmailInput').value.trim().toLowerCase();
+  if (!gm || !gm.includes('@')) return showErpToast('يرجى إدخال بريد Gmail صحيح');
+  state.settings.adminGmail = gm;
+  state.settings.fbRoom = gmailToRoom(gm);
+  state.settings.fbEnabled = true;
+  if (!state.settings.fbUrl) state.settings.fbUrl = 'https://alkak-erp-default-rtdb.firebaseio.com';
+  startCloudPolling();
+  saveState();
+  showErpToast('تم ربط حساب Gmail المدير ومزامنته مع السحابة ✓');
+}
+
+function normalizeSyrianPhoneClient(raw) {
+  let p = (raw || '').replace(/[\s\-()]/g, '');
+  if (p.startsWith('+963')) p = '0' + p.slice(4);
+  else if (p.startsWith('00963')) p = '0' + p.slice(5);
+  else if (p.startsWith('963') && p.length === 12) p = '0' + p.slice(3);
+  return p;
+}
+
+function openLoginModal(forceLock) {
+  const phEl = document.getElementById('loginPhone');
+  const unEl = document.getElementById('loginUser');
+  const pwEl = document.getElementById('loginPass');
+  const acEl = document.getElementById('loginActCode');
+  if (phEl) phEl.value = state.settings.phone || '';
+  if (unEl) unEl.value = 'admin';
+  if (pwEl) pwEl.value = '';
+  if (acEl) acEl.value = '';
+  const cancelBtn = document.getElementById('loginCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = forceLock ? 'none' : '';
+  document.getElementById('erpLoginModal').style.display = 'flex';
+}
+
+function closeLoginModal() {
+  if (!window._erpSessionAuth) return showErpToast('يرجى تسجيل الدخول أولاً للمتابعة');
+  document.getElementById('erpLoginModal').style.display = 'none';
+}
+
+async function doLogin() {
+  const phone = normalizeSyrianPhoneClient(document.getElementById('loginPhone').value);
+  const un = document.getElementById('loginUser').value.trim();
+  const pw = document.getElementById('loginPass').value.trim();
+  const actCode = document.getElementById('loginActCode').value.trim().toUpperCase();
+
+  if (!/^09\d{8}$/.test(phone)) return showErpToast('أدخل رقم هاتف سوري صحيح يبدأ بـ 09 ومكون من 10 أرقام');
+  if (!un || !pw) return showErpToast('أدخل اسم المستخدم وكلمة المرور');
+
+  const url = (state.settings.fbUrl || 'https://alkak-erp-default-rtdb.firebaseio.com').trim().replace(/\/+$/, '');
+  let acc = null;
+  if (url && url.startsWith('https://')) {
+    try {
+      const res = await fetch(`${url}/alkak_accounts/${phone}.json`);
+      if (res.ok) acc = await res.json();
+    } catch (e) {}
+  }
+
+  // Fallback check if already activated locally on this device
+  if (!acc && state.settings.activatedAccount && state.settings.activatedAccount.phone === phone) {
+    acc = state.settings.activatedAccount;
+  }
+  // Built-in demo test account for immediate trial
+  if (!acc && phone === '0931000001') {
+    acc = {
+      phone: '0931000001',
+      phoneIntl: '+963931000001',
+      company: 'شركة تجريبية — القاق ERP',
+      username: 'admin',
+      pass: '1234',
+      activationCode: 'ALK-2026SY',
+      activated: false,
+      status: 'active'
+    };
+  }
+
+  if (!acc) {
+    return showErpToast('الحساب غير موجود! يتم إنشاء الحسابات حصراً من لوحة التحكم.');
+  }
+  if (acc.status === 'blocked') {
+    return showErpToast('تم إيقاف هذا الحساب من لوحة التحكم.');
+  }
+  if ((acc.username || 'admin').toLowerCase() !== un.toLowerCase() || acc.pass !== pw) {
+    return showErpToast('اسم المستخدم أو كلمة المرور غير صحيحة.');
+  }
+  if (!acc.activated) {
+    if (!actCode) return showErpToast('أدخل كود التفعيل المرسل عبر واتساب من لوحة التحكم.');
+    if (actCode !== (acc.activationCode || '').toUpperCase()) {
+      return showErpToast('كود التفعيل غير صحيح! انسخ الكود الصحيح من لوحة التحكم.');
+    }
+    acc.activated = true;
+    try {
+      await fetch(`${url}/alkak_accounts/${phone}.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ activated: true, activatedAt: Date.now() })
+      });
+    } catch (e) {}
+  } else if (actCode && actCode !== (acc.activationCode || '').toUpperCase()) {
+    return showErpToast('كود التفعيل المدخل غير مطابق.');
+  }
+
+  window._erpSessionAuth = true;
+  state.settings.phone = phone;
+  state.settings.coName = acc.company || state.settings.coName;
+  state.settings.fbRoom = 'alkak_' + phone;
+  state.settings.fbEnabled = true;
+  state.settings.initialized = true;
+  state.settings.lockOnStart = true;
+  state.settings.activatedAccount = acc;
+  state.currentUser = un;
+  saveState();
+  try {
+    const devId = (typeof getDeviceId === 'function' ? getDeviceId() : ('DEV_' + phone));
+    fetch(`${url}/alkak_devices/${devId}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: devId, company: acc.company || phone, phone: phone, status: 'approved', firstSeen: new Date().toISOString() })
+    }).catch(() => {});
+    if (typeof pullFromCloud === 'function') pullFromCloud(false);
+  } catch (e) {}
+  applyUserPermissions();
+  refreshAll();
+  document.getElementById('erpLoginModal').style.display = 'none';
+  showErpToast('تم تسجيل الدخول وتفعيل الحساب بنجاح ✓ (' + (acc.company || phone) + ')');
+}
+
+function toggleUserPermsBox() {
+  const role = document.getElementById('uRole').value;
+  document.getElementById('uPermsBox').style.display = role === 'admin' ? 'none' : 'block';
+}
+
+function toggleLockOnStart() {
+  state.settings.lockOnStart = document.getElementById('lockOnStartCb').checked;
+  saveState();
+  showErpToast(state.settings.lockOnStart ? 'تم تفعيل شاشة الدخول عند بدء التطبيق ✓' : 'تم إلغاء قفل الدخول عند البدء');
+}
+
+
+
+function clearAdminAlerts() {
+  state.adminAlerts = [];
+  saveState();
+}
+
+function toggleUserActive(username) {
+  const u = (state.users || []).find(x => x.username === username);
+  if (!u || u.username === 'admin') return;
+  u.active = (u.active === false);
+  if (!u.active && state.currentUser === u.username) {
+    state.currentUser = 'admin';
+  }
+  saveState();
+  showErpToast(u.active ? ('تم تفعيل حساب ' + u.display + ' ✓') : ('تم إيقاف حساب ' + u.display + ' ⛔'));
+}
+
+function saveUserAccount() {
+  if (!hasPerm('users')) return showErpToast('للمدير فقط');
+  const username = document.getElementById('uUsername').value.trim();
+  const display = document.getElementById('uDisplay').value.trim() || username;
+  const pass = document.getElementById('uPass').value.trim();
+  const role = document.getElementById('uRole').value;
+  if (!username || !pass) return showErpToast('يرجى إدخال اسم الدخول وكلمة المرور');
+  const perms = role === 'admin' ? ['all'] : Array.from(document.querySelectorAll('.u-perm-cb:checked')).map(c => c.value);
+  const idx = state.users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
+  const obj = { username, display, pass, role, perms };
+  const isNew = idx < 0;
+  if (idx >= 0) state.users[idx] = obj;
+  else state.users.push(obj);
+  if (!state.adminAlerts) state.adminAlerts = [];
+  state.adminAlerts.unshift({
+    id: Date.now(),
+    time: new Date().toLocaleString('ar-EG'),
+    by: state.currentUser || 'admin',
+    target: username + ' (' + display + ')',
+    role: role === 'admin' ? 'مدير' : 'فرعي',
+    action: isNew ? 'إضافة حساب جديد' : 'تعديل حساب'
+  });
+  if (state.adminAlerts.length > 30) state.adminAlerts.pop();
+  document.getElementById('uUsername').value = '';
+  document.getElementById('uDisplay').value = '';
+  document.getElementById('uPass').value = '';
+  saveState();
+  showErpToast('تم حفظ الحساب وإرسال إشعار للمدير الرئيسي ✓');
+}
+
+function editUserQuick(username) {
+  const u = state.users.find(x => x.username === username);
+  if (!u) return;
+  document.getElementById('uUsername').value = u.username;
+  document.getElementById('uDisplay').value = u.display;
+  document.getElementById('uPass').value = u.pass;
+  document.getElementById('uRole').value = u.role;
+  toggleUserPermsBox();
+  document.querySelectorAll('.u-perm-cb').forEach(cb => {
+    cb.checked = u.role === 'admin' || (u.perms || []).includes(cb.value);
+  });
+  showErpToast('عدّل البيانات بالأعلى ثم اضغط حفظ الحساب');
+}
+
+function initDB() {
+  const req = indexedDB.open(DB_NAME, DB_VER);
+  req.onupgradeneeded = e => {
+    const d = e.target.result;
+    if (!d.objectStoreNames.contains('erp_state')) d.createObjectStore('erp_state', { keyPath: 'id' });
+  };
+  req.onsuccess = e => { db = e.target.result; loadState(); };
+  req.onerror = () => {
+    const saved = localStorage.getItem(DB_NAME);
+    if (saved) state = JSON.parse(saved);
+    ensureStateDefaults();
+    refreshAll();
+    startCloudPolling();
+    updateLicenseUI();
+    checkDeviceActivation(false);
+    if (state.settings.fbEnabled && getCloudEndpoint()) { pullFromCloud(false); checkCompanyLicense(false); }
+    if (!window._erpSessionAuth) openLoginModal(true);
+  };
+}
+
+let _cloudSyncTimer = null;
+function getCloudEndpoint() {
+  const url = (state.settings.fbUrl || '').trim().replace(/\/+$/, '');
+  const room = (state.settings.fbRoom || 'alkak_main').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+  if (!url || !url.startsWith('https://')) return '';
+  return `${url}/alqaaq_erp/${room}.json`;
+}
+
+function updateCloudBadge(text, ok) {
+  const el = document.getElementById('hdrCloudStatus');
+  if (!el) return;
+  el.textContent = text;
+  el.style.background = ok ? 'rgba(30,132,73,0.45)' : 'rgba(255,255,255,0.14)';
+}
+
+async function pushToCloud(manual) {
+  const ep = getCloudEndpoint();
+  if (!ep) {
+    if (manual) showErpToast('يرجى إدخال رابط Firebase صحيح يبدأ بـ https://');
+    return;
+  }
+  try {
+    state.updatedAt = Date.now();
+    const res = await fetch(ep, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    updateCloudBadge('☁️ متزامن ✓', true);
+    if (manual) showErpToast('تم رفع البيانات للسحابة بنجاح ✓');
+  } catch (e) {
+    updateCloudBadge('☁️ تعذر الاتصال', false);
+    if (manual) showErpToast('تعذر الاتصال بالسحابة: تأكد من الرابط وقواعد Firebase');
+  }
+}
+
+async function pullFromCloud(manual) {
+  const ep = getCloudEndpoint();
+  if (!ep) {
+    if (manual) showErpToast('يرجى إدخال رابط Firebase صحيح يبدأ بـ https://');
+    return;
+  }
+  try {
+    const res = await fetch(ep);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const remote = await res.json();
+    if (!remote) {
+      if (manual) showErpToast('لا توجد بيانات محفوظة في السحابة بعد');
+      return;
+    }
+    const localTs = Number(state.updatedAt) || 0;
+    const remoteTs = Number(remote.updatedAt) || 0;
+    if (manual || remoteTs > localTs) {
+      const keepFbUrl = state.settings.fbUrl;
+      const keepFbRoom = state.settings.fbRoom;
+      const keepFbEnabled = state.settings.fbEnabled;
+      const keepUser = state.currentUser;
+      state = remote;
+      ensureStateDefaults();
+      state.settings.fbUrl = keepFbUrl;
+      state.settings.fbRoom = keepFbRoom;
+      state.settings.fbEnabled = keepFbEnabled;
+      if (keepUser && (state.users || []).some(u => u.username === keepUser)) {
+        state.currentUser = keepUser;
+      }
+      localStorage.setItem(DB_NAME, JSON.stringify(state));
+      if (db) {
+        const tx = db.transaction('erp_state', 'readwrite');
+        tx.objectStore('erp_state').put({ id: 'main', data: state });
+      }
+      refreshAll();
+      updateCloudBadge('☁️ متزامن ✓', true);
+      const latestAlert = (state.adminAlerts || [])[0];
+      if (latestAlert && (Date.now() - latestAlert.id) < 60000 && getCurrentUserObj().role === 'admin') {
+        showErpToast('🔔 تنبيه للمدير: ' + latestAlert.action + ' ' + latestAlert.target);
+      } else if (manual) {
+        showErpToast('تم جلب أحدث بيانات السحابة ✓');
+      }
+    }
+  } catch (e) {
+    updateCloudBadge('☁️ تعذر الاتصال', false);
+    if (manual) showErpToast('تعذر جلب البيانات من السحابة');
+  }
+}
+
+function saveCloudSettings() {
+  state.settings.fbUrl = document.getElementById('fbUrl').value.trim();
+  state.settings.fbRoom = document.getElementById('fbRoom').value.trim() || 'alkak_main';
+  state.settings.fbEnabled = document.getElementById('fbEnabled').checked;
+  localStorage.setItem(DB_NAME, JSON.stringify(state));
+  if (db) {
+    const tx = db.transaction('erp_state', 'readwrite');
+    tx.objectStore('erp_state').put({ id: 'main', data: state });
+  }
+  startCloudPolling();
+  showErpToast('تم حفظ إعدادات السحابة ✓');
+}
+
+function startCloudPolling() {
+  if (_cloudSyncTimer) clearInterval(_cloudSyncTimer);
+  if (state.settings.fbEnabled && getCloudEndpoint()) {
+    updateCloudBadge('☁️ سحابة مفعّلة', true);
+    _cloudSyncTimer = setInterval(() => { pullFromCloud(false); checkCompanyLicense(false); }, 10000);
+  } else {
+    updateCloudBadge('☁️ محلي', false);
+  }
+}
+
+function saveState() {
+  state.updatedAt = Date.now();
+  localStorage.setItem(DB_NAME, JSON.stringify(state));
+  if (db) {
+    const tx = db.transaction('erp_state', 'readwrite');
+    tx.objectStore('erp_state').put({ id: 'main', data: state });
+  }
+  refreshAll();
+  if (state.settings.fbEnabled && getCloudEndpoint()) {
+    pushToCloud(false);
+  }
+}
+
+function loadState() {
+  if (!db) return;
+  const tx = db.transaction('erp_state', 'readonly');
+  const req = tx.objectStore('erp_state').get('main');
+  req.onsuccess = () => {
+    if (req.result && req.result.data) state = req.result.data;
+    else {
+      const ls = localStorage.getItem(DB_NAME);
+      if (ls) state = JSON.parse(ls);
+    }
+    ensureStateDefaults();
+    refreshAll();
+    if (!window._erpSessionAuth) openLoginModal(true);
+  };
+}
+
+function fmt(n) {
+  return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function getCurrObj(code) {
+  return state.currencies.find(c => c.code === code) || { code: state.settings.currency, sym: state.settings.currency, rate: 1 };
+}
+
+function toBaseAmount(amount, currCode, customRate) {
+  const r = Number(customRate) || Number(getCurrObj(currCode).rate) || 1;
+  return r > 0 ? (Number(amount) / r) : Number(amount);
+}
+
+function showView(id, btn) {
+  if (!hasPerm(id)) {
+    showErpToast('ليس لديك صلاحية لفتح هذه النافذة');
+    return;
+  }
+  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+  const sec = document.getElementById('view-' + id);
+  if (sec) sec.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'print') renderPrintPreview();
+}
+
+function navTo(id) {
+  const btns = document.querySelectorAll('.nav-btn');
+  let targetBtn = null;
+  btns.forEach(b => { if ((b.getAttribute('onclick') || '').includes("'" + id + "'")) targetBtn = b; });
+  showView(id, targetBtn);
+}
+
+function getUnifiedJournal() {
+  const entries = [];
+  state.invoices.forEach(inv => {
+    const isSale = inv.type === 'sale';
+    const cashAcc = inv.pay === 'نقدي (الصندوق)' ? state.accMap.cash : (inv.pay === 'مصرف / تحويل' ? state.accMap.bank : (isSale ? state.accMap.customers : state.accMap.suppliers));
+    const baseNet = inv.baseNet !== undefined ? inv.baseNet : toBaseAmount(inv.net, inv.curr || state.settings.currency, inv.rate);
+    const baseSub = inv.baseSub !== undefined ? inv.baseSub : toBaseAmount(inv.sub, inv.curr || state.settings.currency, inv.rate);
+    const baseVat = inv.baseVat !== undefined ? inv.baseVat : toBaseAmount(inv.vat, inv.curr || state.settings.currency, inv.rate);
+    if (isSale) {
+      entries.push({ src: 'مبيع', date: inv.date, doc: inv.no, acc: cashAcc, desc: `فاتورة مبيع ${inv.no} - ${inv.party}`, dr: baseNet, cr: 0, party: inv.party });
+      entries.push({ src: 'مبيع', date: inv.date, doc: inv.no, acc: state.accMap.sales, desc: `إيراد مبيعات ${inv.no}`, dr: 0, cr: baseSub, party: inv.party });
+      if (baseVat > 0) entries.push({ src: 'ضريبة', date: inv.date, doc: inv.no, acc: state.accMap.vat, desc: `ضريبة مخرجات ${inv.no}`, dr: 0, cr: baseVat, party: inv.party });
+    } else {
+      entries.push({ src: 'شراء', date: inv.date, doc: inv.no, acc: state.accMap.purch, desc: `فاتورة شراء ${inv.no} - ${inv.party}`, dr: baseSub, cr: 0, party: inv.party });
+      if (baseVat > 0) entries.push({ src: 'ضريبة', date: inv.date, doc: inv.no, acc: state.accMap.vat, desc: `ضريبة مدخلات ${inv.no}`, dr: baseVat, cr: 0, party: inv.party });
+      entries.push({ src: 'شراء', date: inv.date, doc: inv.no, acc: cashAcc, desc: `استحقاق/سداد شراء ${inv.no}`, dr: 0, cr: baseNet, party: inv.party });
+    }
+  });
+  state.returns.forEach(r => {
+    const isSaleRet = r.type === 'مرتجع مبيع';
+    const setAcc = r.pay === 'نقدي (الصندوق)' ? state.accMap.cash : (r.pay === 'مصرف / تحويل' ? state.accMap.bank : (isSaleRet ? state.accMap.customers : state.accMap.suppliers));
+    if (isSaleRet) {
+      entries.push({ src: 'مرتجع مبيع', date: r.date, doc: r.no, acc: state.accMap.salesRet, desc: `مرتجع مبيع ${r.no}`, dr: r.sub, cr: 0, party: r.party });
+      if (r.vat > 0) entries.push({ src: 'ضريبة', date: r.date, doc: r.no, acc: state.accMap.vat, desc: `عكس ضريبة ${r.no}`, dr: r.vat, cr: 0, party: r.party });
+      entries.push({ src: 'مرتجع مبيع', date: r.date, doc: r.no, acc: setAcc, desc: `تسوية مرتجع ${r.no}`, dr: 0, cr: r.net, party: r.party });
+    } else {
+      entries.push({ src: 'مرتجع شراء', date: r.date, doc: r.no, acc: setAcc, desc: `تسوية مرتجع شراء ${r.no}`, dr: r.net, cr: 0, party: r.party });
+      entries.push({ src: 'مرتجع شراء', date: r.date, doc: r.no, acc: state.accMap.purchRet, desc: `مرتجع شراء ${r.no}`, dr: 0, cr: r.sub, party: r.party });
+      if (r.vat > 0) entries.push({ src: 'ضريبة', date: r.date, doc: r.no, acc: state.accMap.vat, desc: `عكس ضريبة ${r.no}`, dr: 0, cr: r.vat, party: r.party });
+    }
+  });
+  state.vouchers.forEach(v => {
+    if (v.type === 'سند قبض') {
+      entries.push({ src: 'سند قبض', date: v.date, doc: v.no, acc: v.cashAcc, desc: v.desc || `سند قبض ${v.no}`, dr: v.amount, cr: 0, party: v.party });
+      entries.push({ src: 'سند قبض', date: v.date, doc: v.no, acc: v.oppAcc, desc: v.desc || `سند قبض ${v.no}`, dr: 0, cr: v.amount, party: v.party });
+    } else {
+      entries.push({ src: 'سند دفع', date: v.date, doc: v.no, acc: v.oppAcc, desc: v.desc || `سند دفع ${v.no}`, dr: v.amount, cr: 0, party: v.party });
+      entries.push({ src: 'سند دفع', date: v.date, doc: v.no, acc: v.cashAcc, desc: v.desc || `سند دفع ${v.no}`, dr: 0, cr: v.amount, party: v.party });
+    }
+  });
+  state.mfgOrders.forEach(m => {
+    entries.push({ src: 'تصنيع', date: m.date, doc: m.no, acc: state.accMap.finStock, desc: `إنتاج تام أمر ${m.no}`, dr: m.totalCost, cr: 0, party: '-' });
+    entries.push({ src: 'تصنيع', date: m.date, doc: m.no, acc: state.accMap.rawStock, desc: `صرف خامات وكلفة أمر ${m.no}`, dr: 0, cr: m.totalCost, party: '-' });
+  });
+  (state.manualJournals || []).forEach(mj => {
+    entries.push({ src: 'قيد يدوي', date: mj.date, doc: mj.no, acc: mj.drAcc, desc: mj.desc || `قيد يدوي ${mj.no}`, dr: mj.amt, cr: 0, party: '-' });
+    entries.push({ src: 'قيد يدوي', date: mj.date, doc: mj.no, acc: mj.crAcc, desc: mj.desc || `قيد يدوي ${mj.no}`, dr: 0, cr: mj.amt, party: '-' });
+  });
+  return entries;
+}
+
+function getAccBalance(code, journal) {
+  const acc = state.coa.find(a => a.code === code);
+  if (!acc) return 0;
+  let dr = 0, cr = 0;
+  journal.forEach(j => { if (j.acc === code) { dr += j.dr; cr += j.cr; } });
+  return acc.nature === 'مدين' ? (Number(acc.open) + dr - cr) : (Number(acc.open) + cr - dr);
+}
+
+// Currencies Management
+function saveCurrency() {
+  const code = document.getElementById('curCode').value.trim().toUpperCase();
+  const name = document.getElementById('curName').value.trim();
+  const sym = document.getElementById('curSym').value.trim() || code;
+  const rate = parseFloat(document.getElementById('curRate').value) || 1;
+  if (!code || !name || rate <= 0) return showErpToast('يرجى إدخال رمز واسم العملة وسعر صرف صحيح');
+  const existing = state.currencies.find(c => c.code === code);
+  if (existing) { existing.name = name; existing.sym = sym; existing.rate = rate; }
+  else state.currencies.push({ code, name, sym, rate });
+  document.getElementById('curCode').value = '';
+  document.getElementById('curName').value = '';
+  document.getElementById('curSym').value = '';
+  document.getElementById('curRate').value = '1';
+  saveState();
+  showErpToast('تم حفظ العملة بنجاح ✓');
+}
+
+function editCurrencyPrompt(code) {
+  const c = state.currencies.find(x => x.code === code);
+  if (!c) return;
+  document.getElementById('curCode').value = c.code;
+  document.getElementById('curName').value = c.name;
+  document.getElementById('curSym').value = c.sym;
+  document.getElementById('curRate').value = c.rate;
+  showErpToast('عدّل سعر الصرف بالأعلى ثم اضغط حفظ / تحديث العملة');
+}
+
+function setBaseCurrency() {
+  const newBase = document.getElementById('baseCurrSel').value;
+  if (!newBase) return;
+  const target = getCurrObj(newBase);
+  const oldRate = Number(target.rate) || 1;
+  if (oldRate > 0 && oldRate !== 1) {
+    state.currencies.forEach(c => { c.rate = +(Number(c.rate) / oldRate).toFixed(4); });
+  }
+  target.rate = 1;
+  state.settings.currency = newBase;
+  saveState();
+  showErpToast('تم اعتماد ' + newBase + ' كعملة رئيسية ✓');
+}
+
+function saveSettings() {
+  state.settings.coName = document.getElementById('setCoName').value.trim();
+  state.settings.taxNo = document.getElementById('setTaxNo').value.trim();
+  state.settings.address = document.getElementById('setAddress').value.trim();
+  state.settings.vatRate = parseFloat(document.getElementById('setVatRate').value) || 0;
+  const chosenCurr = document.getElementById('setCurrency').value;
+  if (chosenCurr && chosenCurr !== state.settings.currency) {
+    document.getElementById('baseCurrSel').value = chosenCurr;
+    setBaseCurrency();
+  }
+  state.settings.year = document.getElementById('setYear').value.trim() || '2026';
+  state.settings.invTemplate = document.getElementById('setInvTemplate').value || 'classic';
+  saveState();
+  showErpToast('تم حفظ إعدادات الشركة بنجاح ✓');
+}
+
+function savePrintTemplateChoice() {
+  state.settings.invTemplate = document.getElementById('prTemplate').value;
+  saveState();
+  renderPrintPreview();
+}
+
+function saveParty() {
+  const code = document.getElementById('ptCode').value.trim();
+  const name = document.getElementById('ptName').value.trim();
+  if (!code || !name) return showErpToast('يرجى إدخال رمز واسم الطرف');
+  const obj = {
+    code, name,
+    type: document.getElementById('ptType').value,
+    phone: document.getElementById('ptPhone').value.trim(),
+    open: parseFloat(document.getElementById('ptOpen').value) || 0
+  };
+  const idx = state.parties.findIndex(p => p.code === code);
+  if (idx >= 0) state.parties[idx] = obj;
+  else state.parties.push(obj);
+  document.getElementById('ptCode').value = '';
+  document.getElementById('ptName').value = '';
+  document.getElementById('ptPhone').value = '';
+  document.getElementById('ptOpen').value = '0';
+  saveState();
+  showErpToast('تم حفظ بطاقة الطرف ✓');
+}
+
+function editPartyQuick(code) {
+  const p = state.parties.find(x => x.code === code);
+  if (!p) return;
+  document.getElementById('ptCode').value = p.code;
+  document.getElementById('ptName').value = p.name;
+  document.getElementById('ptType').value = p.type;
+  document.getElementById('ptPhone').value = p.phone || '';
+  document.getElementById('ptOpen').value = p.open || 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showErpToast('عدّل البيانات بالأعلى ثم اضغط حفظ البطاقة');
+}
+
+function onItemCurrChange() {
+  const code = document.getElementById('itCurr').value;
+  document.getElementById('itRate').value = getCurrObj(code).rate || 1;
+}
+
+function onItemParentChange() {
+  const pCode = document.getElementById('itParent').value;
+  const codeEl = document.getElementById('itCode');
+  if (!codeEl) return;
+  if (pCode) {
+    const children = state.items.filter(i => i.parent === pCode);
+    codeEl.value = pCode + String(children.length + 1).padStart(2, '0');
+  } else if (state.settings.autoCodes !== false) {
+    codeEl.value = getNextAutoCode('item');
+  }
+}
+
+function saveItem() {
+  const code = document.getElementById('itCode').value.trim();
+  const name = document.getElementById('itName').value.trim();
+  if (!code || !name) return showErpToast('يرجى إدخال رمز واسم المادة');
+  const curr = document.getElementById('itCurr').value || state.settings.currency;
+  const rate = parseFloat(document.getElementById('itRate').value) || getCurrObj(curr).rate || 1;
+  const parent = document.getElementById('itParent').value || '';
+  const obj = {
+    code, name, parent,
+    cat: document.getElementById('itCat').value,
+    unit: document.getElementById('itUnit').value.trim() || 'قطعة',
+    curr, rate,
+    cost: parseFloat(document.getElementById('itCost').value) || 0,
+    price: parseFloat(document.getElementById('itPrice').value) || 0,
+    open: parseFloat(document.getElementById('itOpen').value) || 0,
+    minQty: parseFloat(document.getElementById('itMin').value) || 0
+  };
+  const idx = state.items.findIndex(i => i.code === code);
+  if (idx >= 0) state.items[idx] = obj;
+  else state.items.push(obj);
+  document.getElementById('itCode').value = '';
+  document.getElementById('itName').value = '';
+  document.getElementById('itOpen').value = '0';
+  saveState();
+  showErpToast('تم حفظ بطاقة المادة ✓');
+}
+
+function editItemQuick(code) {
+  const it = state.items.find(i => i.code === code);
+  if (!it) return;
+  document.getElementById('itCode').value = it.code;
+  document.getElementById('itName').value = it.name;
+  document.getElementById('itCat').value = it.cat;
+  document.getElementById('itParent').value = it.parent || '';
+  document.getElementById('itUnit').value = it.unit;
+  document.getElementById('itCurr').value = it.curr || state.settings.currency;
+  document.getElementById('itRate').value = it.rate || getCurrObj(it.curr || state.settings.currency).rate || 1;
+  document.getElementById('itCost').value = it.cost;
+  document.getElementById('itPrice').value = it.price;
+  document.getElementById('itOpen').value = it.open;
+  document.getElementById('itMin').value = it.minQty || 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showErpToast('عدّل سعر الصرف أو الأسعار بالأعلى ثم اضغط حفظ بطاقة المادة');
+}
+
+function onInvCurrChange(prefix) {
+  const c = document.getElementById(prefix + 'Curr').value;
+  document.getElementById(prefix + 'Rate').value = getCurrObj(c).rate || 1;
+  fillItemPrice(prefix);
+}
+
+function fillItemPrice(prefix) {
+  const code = document.getElementById(prefix + 'Item').value;
+  const itm = state.items.find(i => i.code === code);
+  if (!itm) return;
+  const itemCurr = itm.curr || state.settings.currency;
+  const itemRate = Number(itm.rate) || Number(getCurrObj(itemCurr).rate) || 1;
+  if (prefix === 'r') {
+    const rt = document.getElementById('rType').value;
+    document.getElementById('rPrice').value = rt === 'مرتجع مبيع' ? itm.price : itm.cost;
+    return;
+  }
+  const invCurr = document.getElementById(prefix + 'Curr').value || state.settings.currency;
+  const invRate = Number(document.getElementById(prefix + 'Rate').value) || Number(getCurrObj(invCurr).rate) || 1;
+  const rawPrice = prefix === 's' ? itm.price : itm.cost;
+  const baseVal = itemRate > 0 ? (rawPrice / itemRate) : rawPrice;
+  const converted = +(baseVal * invRate).toFixed(2);
+  document.getElementById(prefix + 'Price').value = converted;
+  calcLine(prefix);
+}
+
+function calcLine(prefix) {
+  const qty = parseFloat(document.getElementById(prefix + 'Qty').value) || 0;
+  const price = parseFloat(document.getElementById(prefix + 'Price').value) || 0;
+  const disc = parseFloat(document.getElementById(prefix + 'Disc').value) || 0;
+  const sub = Math.max(0, (qty * price) - disc);
+  document.getElementById(prefix + 'Net').value = fmt(sub);
+}
+
+function addInvLine(prefix) {
+  const itemCode = document.getElementById(prefix + 'Item').value;
+  const qty = parseFloat(document.getElementById(prefix + 'Qty').value) || 0;
+  const price = parseFloat(document.getElementById(prefix + 'Price').value) || 0;
+  const disc = parseFloat(document.getElementById(prefix + 'Disc').value) || 0;
+  if (!itemCode || qty <= 0) return showErpToast('يرجى اختيار المادة وإدخال كمية صحيحة');
+  const itm = state.items.find(i => i.code === itemCode);
+  const sub = Math.max(0, (qty * price) - disc);
+  draftLines[prefix].push({ itemCode, itemName: itm ? itm.name : itemCode, qty, price, disc, sub });
+  document.getElementById(prefix + 'Qty').value = '1';
+  document.getElementById(prefix + 'Disc').value = '0';
+  renderDraftLines(prefix);
+}
+
+function renderDraftLines(prefix) {
+  const box = document.getElementById(prefix + 'LinesBox');
+  const tbl = document.getElementById(prefix + 'LinesTbl');
+  const badge = document.getElementById(prefix + 'TotalBadge');
+  const lines = draftLines[prefix];
+  if (!lines.length) {
+    box.style.display = 'none';
+    badge.textContent = '';
+    return;
+  }
+  box.style.display = 'block';
+  tbl.innerHTML = lines.map((l, idx) => `
+    <tr><td>${l.itemName}</td><td class="num">${l.qty}</td><td class="num">${fmt(l.price)}</td><td class="num">${fmt(l.disc)}</td><td class="num">${fmt(l.sub)}</td>
+    <td><button type="button" class="btn btn-danger" onclick="draftLines['${prefix}'].splice(${idx},1);renderDraftLines('${prefix}')">✕</button></td></tr>
+  `).join('');
+  const sub = lines.reduce((a, b) => a + b.sub, 0);
+  const vat = sub * (state.settings.vatRate / 100);
+  const curr = document.getElementById(prefix + 'Curr').value || state.settings.currency;
+  badge.textContent = `الإجمالي شامل الضريبة: ${fmt(sub + vat)} ${curr}`;
+}
+
+function saveInvoice(type) {
+  const p = type === 'sale' ? 's' : 'p';
+  let no = document.getElementById(p + 'InvNo').value.trim();
+  if (!no) no = (type === 'sale' ? 'INV-' : 'PUR-') + (state.invoices.filter(i => i.type === type).length + 1001);
+  const date = document.getElementById(p + 'Date').value || todayStr();
+  const party = document.getElementById(p + 'Party').value || 'نقدي مباشر';
+  const pay = document.getElementById(p + 'Pay').value;
+  const curr = document.getElementById(p + 'Curr').value || state.settings.currency;
+  const rate = parseFloat(document.getElementById(p + 'Rate').value) || getCurrObj(curr).rate || 1;
+
+  let lines = [...draftLines[p]];
+  if (!lines.length) {
+    const itemCode = document.getElementById(p + 'Item').value;
+    const qty = parseFloat(document.getElementById(p + 'Qty').value) || 0;
+    const price = parseFloat(document.getElementById(p + 'Price').value) || 0;
+    const disc = parseFloat(document.getElementById(p + 'Disc').value) || 0;
+    if (!itemCode || qty <= 0) return showErpToast('يرجى إضافة صنف واحد على الأقل للفاتورة');
+    const itm = state.items.find(i => i.code === itemCode);
+    lines.push({ itemCode, itemName: itm ? itm.name : itemCode, qty, price, disc, sub: Math.max(0, (qty * price) - disc) });
+  }
+
+  const sub = +lines.reduce((a, b) => a + b.sub, 0).toFixed(2);
+  const vat = +(sub * (state.settings.vatRate / 100)).toFixed(2);
+  const net = +(sub + vat).toFixed(2);
+  const baseSub = +toBaseAmount(sub, curr, rate).toFixed(2);
+  const baseVat = +toBaseAmount(vat, curr, rate).toFixed(2);
+  const baseNet = +(baseSub + baseVat).toFixed(2);
+
+  state.invoices.push({
+    id: Date.now(), type, no, date, party, pay, curr, rate, lines,
+    itemCode: lines[0].itemCode, itemName: lines.map(l => l.itemName).join('، '),
+    qty: lines.reduce((a, b) => a + b.qty, 0), price: lines[0].price, disc: lines.reduce((a, b) => a + b.disc, 0),
+    sub, vat, net, baseSub, baseVat, baseNet
+  });
+  draftLines[p] = [];
+  renderDraftLines(p);
+  document.getElementById(p + 'InvNo').value = '';
+  saveState();
+  showErpToast('تم حفظ وترحيل الفاتورة بنجاح ✓');
+}
+
+function saveReturn() {
+  const no = document.getElementById('rNo').value.trim() || ('RET-' + (state.returns.length + 1));
+  const date = document.getElementById('rDate').value || todayStr();
+  const type = document.getElementById('rType').value;
+  const party = document.getElementById('rParty').value || 'نقدي مباشر';
+  const pay = document.getElementById('rPay').value;
+  const itemCode = document.getElementById('rItem').value;
+  const qty = parseFloat(document.getElementById('rQty').value) || 0;
+  const price = parseFloat(document.getElementById('rPrice').value) || 0;
+  if (!itemCode || qty <= 0) return showErpToast('يرجى إكمال بيانات المرتجع');
+  const itm = state.items.find(i => i.code === itemCode);
+  const sub = qty * price;
+  const vat = +(sub * (state.settings.vatRate / 100)).toFixed(2);
+  const net = +(sub + vat).toFixed(2);
+  state.returns.push({ id: Date.now(), no, date, type, party, pay, itemCode, itemName: itm ? itm.name : itemCode, qty, price, sub, vat, net });
+  document.getElementById('rNo').value = '';
+  saveState();
+}
+
+function saveVoucher() {
+  const no = document.getElementById('vNo').value.trim() || ('RV-' + (state.vouchers.length + 1));
+  const date = document.getElementById('vDate').value || todayStr();
+  const type = document.getElementById('vType').value;
+  const party = document.getElementById('vParty').value || '-';
+  const cashAcc = document.getElementById('vCashAcc').value;
+  const oppAcc = document.getElementById('vOppAcc').value;
+  const amount = parseFloat(document.getElementById('vAmount').value) || 0;
+  const desc = document.getElementById('vDesc').value.trim();
+  if (amount <= 0) return showErpToast('يرجى إدخال مبلغ صحيح للسند');
+  state.vouchers.push({ id: Date.now(), no, date, type, party, cashAcc, oppAcc, amount, desc });
+  document.getElementById('vNo').value = '';
+  document.getElementById('vAmount').value = '0';
+  saveState();
+}
+
+function saveMfgOrder() {
+  const no = document.getElementById('mNo').value.trim() || ('MFG-' + (state.mfgOrders.length + 1));
+  const date = document.getElementById('mDate').value || todayStr();
+  const prodCode = document.getElementById('mProd').value;
+  const prodQty = parseFloat(document.getElementById('mProdQty').value) || 0;
+  const rawCode = document.getElementById('mRaw').value;
+  const rawQty = parseFloat(document.getElementById('mRawQty').value) || 0;
+  const labor = parseFloat(document.getElementById('mLabor').value) || 0;
+  if (!prodCode || !rawCode || prodQty <= 0) return showErpToast('يرجى إكمال بيانات أمر التصنيع');
+  const prod = state.items.find(i => i.code === prodCode);
+  const raw = state.items.find(i => i.code === rawCode);
+  const rawBaseCost = raw ? toBaseAmount(raw.cost, raw.curr || state.settings.currency, raw.rate) : 0;
+  const rawCost = rawBaseCost * rawQty;
+  const totalCost = rawCost + labor;
+  const unitCost = +(totalCost / prodQty).toFixed(2);
+  if (prod) { prod.cost = unitCost; prod.curr = state.settings.currency; prod.rate = 1; }
+  state.mfgOrders.push({
+    id: Date.now(), no, date, prodCode, prodName: prod ? prod.name : prodCode, prodQty,
+    rawCode, rawName: raw ? raw.name : rawCode, rawQty, rawCost, labor, totalCost, unitCost
+  });
+  document.getElementById('mNo').value = '';
+  saveState();
+}
+
+function onCoaParentChange() {
+  const pCode = document.getElementById('acParent').value;
+  const codeEl = document.getElementById('acCode');
+  if (!pCode) { codeEl.value = ''; return; }
+  const parentAcc = state.coa.find(a => a.code === pCode);
+  if (parentAcc) {
+    document.getElementById('acGroup').value = parentAcc.group;
+    document.getElementById('acNature').value = parentAcc.nature;
+  }
+  const kids = state.coa.filter(a => a.parent === pCode);
+  codeEl.value = pCode + String(kids.length + 1).padStart(4, '0');
+}
+
+function saveAccount() {
+  const code = document.getElementById('acCode').value.trim();
+  const name = document.getElementById('acName').value.trim();
+  const group = document.getElementById('acGroup').value;
+  const nature = document.getElementById('acNature').value;
+  const open = parseFloat(document.getElementById('acOpen').value) || 0;
+  const parent = document.getElementById('acParent').value || '';
+  if (!code || !name) return showErpToast('يرجى إدخال رمز واسم الحساب');
+  const existing = state.coa.find(a => a.code === code);
+  if (existing) { existing.name = name; existing.group = group; existing.nature = nature; existing.open = open; existing.parent = parent; }
+  else state.coa.push({ code, name, group, nature, open, parent });
+  document.getElementById('acCode').value = '';
+  document.getElementById('acName').value = '';
+  saveState();
+  showErpToast('تم حفظ الحساب في الشجرة ✓');
+}
+
+function getCoaTreeBalance(code, journal) {
+  const kids = state.coa.filter(a => a.parent === code);
+  if (kids.length > 0) {
+    return kids.reduce((sum, k) => sum + getCoaTreeBalance(k.code, journal), 0) + getAccBalance(code, journal);
+  }
+  return getAccBalance(code, journal);
+}
+
+function deleteRec(arrName, id) {
+  if (!hasPerm('canDelete')) return showErpToast('ليس لديك صلاحية حذف السجلات');
+  askErpConfirm('هل أنت متأكد من حذف هذا السجل؟', () => {
+    state[arrName] = state[arrName].filter(x => x.id !== id);
+    saveState();
+  });
+}
+
+function getStockQty(code) {
+  const itm = state.items.find(i => i.code === code);
+  if (!itm) return 0;
+  let q = Number(itm.open) || 0;
+  state.invoices.forEach(inv => {
+    if (inv.lines && inv.lines.length) {
+      inv.lines.forEach(l => { if (l.itemCode === code) q += (inv.type === 'purchase' ? l.qty : -l.qty); });
+    } else if (inv.itemCode === code) {
+      q += (inv.type === 'purchase' ? inv.qty : -inv.qty);
+    }
+  });
+  state.returns.forEach(r => { if (r.itemCode === code) q += (r.type === 'مرتجع مبيع' ? r.qty : -r.qty); });
+  state.mfgOrders.forEach(m => {
+    if (m.prodCode === code) q += m.prodQty;
+    if (m.rawCode === code) q -= m.rawQty;
+  });
+  return q;
+}
+
+function getPartyBalance(name) {
+  const pt = state.parties.find(p => p.name === name);
+  if (!pt) return 0;
+  let bal = Number(pt.open) || 0;
+  state.invoices.forEach(inv => {
+    if (inv.party === name && inv.pay === 'آجل (ذمم)') {
+      bal += (inv.baseNet !== undefined ? inv.baseNet : toBaseAmount(inv.net, inv.curr || state.settings.currency, inv.rate));
+    }
+  });
+  state.returns.forEach(r => { if (r.party === name && r.pay === 'آجل (ذمم)') bal -= r.net; });
+  state.vouchers.forEach(v => { if (v.party === name) bal -= v.amount; });
+  return bal;
+}
+
+function refreshAll() {
+  ensureStateDefaults();
+  const baseCurr = state.settings.currency;
+  document.getElementById('hdrCoName').textContent = 'المنشأة: ' + (state.settings.coName || 'يرجى التأسيس من الثوابت') + ' (' + baseCurr + ')';
+  document.getElementById('hdrFiscalYear').textContent = 'السنة المالية: ' + state.settings.year;
+  document.getElementById('setCoName').value = state.settings.coName || '';
+  document.getElementById('setTaxNo').value = state.settings.taxNo || '';
+  document.getElementById('setAddress').value = state.settings.address || '';
+  document.getElementById('setVatRate').value = state.settings.vatRate;
+  document.getElementById('setYear').value = state.settings.year;
+  document.getElementById('setInvTemplate').value = state.settings.invTemplate || 'classic';
+  if (document.getElementById('fbUrl')) document.getElementById('fbUrl').value = state.settings.fbUrl || '';
+  if (document.getElementById('fbRoom')) document.getElementById('fbRoom').value = state.settings.fbRoom || 'alkak_main';
+  if (document.getElementById('adminGmailInput')) document.getElementById('adminGmailInput').value = state.settings.adminGmail || '';
+  if (document.getElementById('fbEnabled')) document.getElementById('fbEnabled').checked = !!state.settings.fbEnabled;
+  document.getElementById('prTemplate').value = state.settings.invTemplate || 'classic';
+
+  const itCodeEl = document.getElementById('itCode');
+  if (itCodeEl && !itCodeEl.value && state.settings.autoCodes !== false) itCodeEl.value = getNextAutoCode('item');
+  const ptCodeEl = document.getElementById('ptCode');
+  if (ptCodeEl && !ptCodeEl.value && state.settings.autoCodes !== false) {
+    const ptType = document.getElementById('ptType')?.value || 'زبون';
+    ptCodeEl.value = getNextAutoCode(ptType === 'مورد' ? 'supplier' : 'customer');
+  }
+    ['sDate', 'pDate', 'rDate', 'vDate', 'mDate', 'mjDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = todayStr();
+  });
+
+  // Currencies dropdowns
+  const currOpts = state.currencies.map(c => `<option value="${c.code}">${c.code} (${c.sym}) - ${c.name}</option>`).join('');
+  document.querySelectorAll('.curr-select').forEach(sel => {
+    const prev = sel.value;
+    sel.innerHTML = currOpts;
+    sel.value = prev && state.currencies.some(c => c.code === prev) ? prev : baseCurr;
+  });
+  document.getElementById('baseCurrSel').value = baseCurr;
+  document.getElementById('setCurrency').value = baseCurr;
+
+  // Render Currencies table
+  document.getElementById('tblCurrencies').innerHTML = state.currencies.map((c, idx) => `
+    <tr><td><strong>${c.code}</strong></td><td>${c.name}</td><td>${c.sym}</td>
+    <td class="num">${c.rate}</td>
+    <td>${c.code === baseCurr ? '<span class="badge-ok">رئيسية ✓</span>' : 'فرعية'}</td>
+    <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="editCurrencyPrompt('${c.code}')">✏️</button></td>
+    <td>${c.code === baseCurr ? '-' : `<button class="btn btn-danger" onclick="state.currencies.splice(${idx},1);saveState()">✕</button>`}</td></tr>
+  `).join('');
+
+  const partyOpts = '<option value="">-- اختر الطرف --</option>' + state.parties.map(p => `<option value="${p.name}">${p.name} (${p.type})</option>`).join('');
+  document.querySelectorAll('.party-select').forEach(sel => sel.innerHTML = partyOpts);
+
+  const parentSel = document.getElementById('itParent');
+  if (parentSel) {
+    const prevP = parentSel.value;
+    parentSel.innerHTML = '<option value="">-- بدون أب (رئيسية) --</option>' +
+      state.items.filter(i => i.cat === 'مجموعة أب' || !i.parent).map(i => `<option value="${i.code}">📁 ${i.code} - ${i.name}</option>`).join('');
+    if (prevP) parentSel.value = prevP;
+  }
+  const itemOpts = '<option value="">-- اختر المادة --</option>' + state.items.filter(i => i.cat !== 'مجموعة أب').map(i => `<option value="${i.code}">${i.code} - ${i.name}</option>`).join('');
+  document.querySelectorAll('.item-select').forEach(sel => sel.innerHTML = itemOpts);
+
+  const accOpts = state.coa.map(a => `<option value="${a.code}">${a.code} - ${a.name}</option>`).join('');
+  document.querySelectorAll('.acc-select').forEach(sel => sel.innerHTML = accOpts);
+
+  const prInvSel = document.getElementById('prInvSel');
+  if (prInvSel) {
+    const prevInv = prInvSel.value;
+    prInvSel.innerHTML = state.invoices.map(i => `<option value="${i.id}">${i.no} - ${i.party} (${fmt(i.net)} ${i.curr || baseCurr})</option>`).join('');
+    if (prevInv) prInvSel.value = prevInv;
+  }
+
+  // Filter & render Sales / Purchases
+  const sQ = (document.getElementById('sSearch')?.value || '').trim().toLowerCase();
+  document.getElementById('tblSales').innerHTML = state.invoices.filter(i => i.type === 'sale' && (!sQ || i.no.toLowerCase().includes(sQ) || i.party.toLowerCase().includes(sQ))).map(i => {
+    const cnt = i.lines ? i.lines.length : 1;
+    const bNet = i.baseNet !== undefined ? i.baseNet : toBaseAmount(i.net, i.curr || baseCurr, i.rate);
+    return `<tr><td>${i.no}</td><td>${i.date}</td><td>${i.party}</td><td>${i.pay}</td><td>${i.itemName} (${cnt})</td>
+    <td>${i.curr || baseCurr}</td><td class="num">${fmt(i.vat)}</td><td class="num">${fmt(i.net)}</td><td class="num">${fmt(bNet)} ${baseCurr}</td>
+    <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="printSingleInv(${i.id})">🖨️</button></td>
+    <td><button class="btn btn-danger" onclick="deleteRec('invoices',${i.id})">✕</button></td></tr>`;
+  }).join('');
+
+  const pQ = (document.getElementById('pSearch')?.value || '').trim().toLowerCase();
+  document.getElementById('tblPurch').innerHTML = state.invoices.filter(i => i.type === 'purchase' && (!pQ || i.no.toLowerCase().includes(pQ) || i.party.toLowerCase().includes(pQ))).map(i => {
+    const cnt = i.lines ? i.lines.length : 1;
+    const bNet = i.baseNet !== undefined ? i.baseNet : toBaseAmount(i.net, i.curr || baseCurr, i.rate);
+    return `<tr><td>${i.no}</td><td>${i.date}</td><td>${i.party}</td><td>${i.pay}</td><td>${i.itemName} (${cnt})</td>
+    <td>${i.curr || baseCurr}</td><td class="num">${fmt(i.vat)}</td><td class="num">${fmt(i.net)}</td><td class="num">${fmt(bNet)} ${baseCurr}</td>
+    <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="printSingleInv(${i.id})">🖨️</button></td>
+    <td><button class="btn btn-danger" onclick="deleteRec('invoices',${i.id})">✕</button></td></tr>`;
+  }).join('');
+
+  document.getElementById('tblReturns').innerHTML = state.returns.map(r => `
+    <tr><td>${r.no}</td><td>${r.date}</td><td>${r.type}</td><td>${r.party}</td><td>${r.itemName}</td>
+    <td class="num">${r.qty}</td><td class="num">${fmt(r.net)}</td>
+    <td><button class="btn btn-danger" onclick="deleteRec('returns',${r.id})">✕</button></td></tr>`).join('');
+
+  document.getElementById('tblVouchers').innerHTML = state.vouchers.map(v => `
+    <tr><td>${v.no}</td><td>${v.date}</td><td>${v.type}</td><td>${v.party}</td><td>${v.oppAcc}</td>
+    <td class="num">${fmt(v.amount)}</td><td>${v.desc}</td>
+    <td><button class="btn btn-danger" onclick="deleteRec('vouchers',${v.id})">✕</button></td></tr>`).join('');
+
+  document.getElementById('tblParties').innerHTML = state.parties.map((p, idx) => `
+    <tr><td>${p.code}</td><td>${p.name}</td><td>${p.type}</td><td>${p.phone}</td>
+    <td class="num">${fmt(p.open)}</td><td class="num">${fmt(getPartyBalance(p.name))}</td>
+    <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="printPartyStmt('${p.name}')">📄 كشف</button></td>
+    <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="editPartyQuick('${p.code}')">✏️</button></td>
+    <td><button class="btn btn-danger" onclick="state.parties.splice(${idx},1);saveState()">✕</button></td></tr>`).join('');
+
+  let totalStockVal = 0;
+  const itQ = (document.getElementById('itSearch')?.value || '').trim().toLowerCase();
+  const orderedItems = [];
+  const roots = state.items.filter(i => !i.parent);
+  const orphans = state.items.filter(i => i.parent && !state.items.some(p => p.code === i.parent));
+  roots.forEach(r => {
+    orderedItems.push(r);
+    state.items.filter(c => c.parent === r.code).forEach(c => orderedItems.push(c));
+  });
+  orphans.forEach(o => orderedItems.push(o));
+
+  document.getElementById('tblStock').innerHTML = orderedItems.filter(it => !itQ || it.name.toLowerCase().includes(itQ) || it.code.toLowerCase().includes(itQ)).map((it) => {
+    const idx = state.items.findIndex(x => x.code === it.code);
+    const isGroup = it.cat === 'مجموعة أب';
+    if (isGroup) {
+      const children = state.items.filter(c => c.parent === it.code);
+      const grpQty = children.reduce((a, c) => a + getStockQty(c.code), 0);
+      const grpVal = children.reduce((a, c) => a + (getStockQty(c.code) * toBaseAmount(c.cost, c.curr || baseCurr, c.rate)), 0);
+      return `<tr style="background:#EBF5FB;font-weight:bold;"><td>${it.code}</td><td style="text-align:right;">📁 ${it.name}</td><td>مجموعة أب</td><td>-</td><td>-</td><td>-</td><td>-</td>
+        <td class="num">${grpQty}</td><td><span class="badge-ok">${children.length} أصناف</span></td><td class="num">${fmt(grpVal)} ${baseCurr}</td>
+        <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="editItemQuick('${it.code}')">✏️</button></td>
+        <td><button class="btn btn-danger" onclick="state.items.splice(${idx},1);saveState()">✕</button></td></tr>`;
+    }
+    const q = getStockQty(it.code);
+    const itCurr = it.curr || baseCurr;
+    const itRate = Number(it.rate) || Number(getCurrObj(itCurr).rate) || 1;
+    const baseCost = toBaseAmount(it.cost, itCurr, itRate);
+    const val = q * baseCost;
+    totalStockVal += val;
+    const isLow = q <= (Number(it.minQty) || 0);
+    const labelName = it.parent ? ('↳ ' + it.name) : it.name;
+    return `<tr><td>${it.code}</td><td style="text-align:right;">${labelName}</td><td>${it.cat}</td><td>${itCurr}</td><td class="num">${itRate}</td>
+      <td class="num">${fmt(it.cost)}</td><td class="num">${fmt(it.price)}</td>
+      <td class="num">${q}</td>
+      <td>${isLow ? '<span class="badge-warn">منخفض</span>' : '<span class="badge-ok">متوفر</span>'}</td>
+      <td class="num">${fmt(val)} ${baseCurr}</td>
+      <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="editItemQuick('${it.code}')">✏️</button></td>
+      <td><button class="btn btn-danger" onclick="state.items.splice(${idx},1);saveState()">✕</button></td></tr>`;
+  }).join('');
+
+  document.getElementById('tblMfg').innerHTML = state.mfgOrders.map(m => `
+    <tr><td>${m.no}</td><td>${m.date}</td><td>${m.prodName}</td><td class="num">${m.prodQty}</td>
+    <td>${m.rawName} (${m.rawQty})</td><td class="num">${fmt(m.rawCost)}</td><td class="num">${fmt(m.labor)}</td>
+    <td class="num">${fmt(m.totalCost)}</td><td class="num">${fmt(m.unitCost)}</td></tr>`).join('');
+
+  renderJournal();
+  const journal = getUnifiedJournal();
+
+  const acParentSel = document.getElementById('acParent');
+  if (acParentSel) {
+    const prevAcP = acParentSel.value;
+    acParentSel.innerHTML = '<option value="">-- حساب رئيسي (أب) --</option>' +
+      state.coa.map(a => `<option value="${a.code}">${a.code} - ${a.name}</option>`).join('');
+    if (prevAcP) acParentSel.value = prevAcP;
+  }
+
+  const orderedCoa = [];
+  function pushCoaNode(node, depth) {
+    orderedCoa.push({ node, depth });
+    state.coa.filter(c => c.parent === node.code).sort((x, y) => x.code.localeCompare(y.code)).forEach(c => pushCoaNode(c, depth + 1));
+  }
+  state.coa.filter(a => !a.parent || !state.coa.some(p => p.code === a.parent)).sort((x, y) => x.code.localeCompare(y.code)).forEach(r => pushCoaNode(r, 0));
+
+  document.getElementById('tblCoa').innerHTML = orderedCoa.map(({ node: a, depth }) => {
+    const hasKids = state.coa.some(c => c.parent === a.code);
+    const pad = depth * 18;
+    const prefix = hasKids ? '📁 ' : (depth > 0 ? '↳ ' : '');
+    const rowStyle = hasKids ? 'background:#EBF5FB;font-weight:bold;' : '';
+    const bal = getCoaTreeBalance(a.code, journal);
+    return `<tr style="${rowStyle}"><td>${a.code}</td><td style="text-align:right;padding-right:${8 + pad}px;">${prefix}${a.name}</td><td>${a.group}</td><td>${a.nature}</td>
+      <td class="num">${fmt(a.open)}</td><td class="num">${fmt(bal)}</td></tr>`;
+  }).join('');
+
+  let totDr = 0, totCr = 0;
+  const hideZero = document.getElementById('hideZeroAccountsCb')?.checked;
+  document.getElementById('tblTB').innerHTML = state.coa.map(a => {
+    let mDr = 0, mCr = 0;
+    journal.forEach(j => { if (j.acc === a.code) { mDr += j.dr; mCr += j.cr; } });
+    const bal = getAccBalance(a.code, journal);
+    const eDr = a.nature === 'مدين' ? Math.max(0, bal) : Math.max(0, -bal);
+    const eCr = a.nature === 'دائن' ? Math.max(0, bal) : Math.max(0, -bal);
+    totDr += eDr; totCr += eCr;
+    if (hideZero && Math.abs(Number(a.open)) < 0.01 && mDr === 0 && mCr === 0 && Math.abs(bal) < 0.01) return '';
+    return `<tr><td>${a.code}</td><td style="text-align:right;">${a.name}</td><td class="num">${fmt(a.open)}</td>
+      <td class="num">${fmt(mDr)}</td><td class="num">${fmt(mCr)}</td><td class="num">${fmt(eDr)}</td><td class="num">${fmt(eCr)}</td></tr>`;
+  }).join('');
+
+  const rev = getAccBalance(state.accMap.sales, journal) - getAccBalance(state.accMap.salesRet, journal);
+  const pur = getAccBalance(state.accMap.purch, journal) - getAccBalance(state.accMap.purchRet, journal);
+  const exp = getAccBalance(state.accMap.salaries, journal) + getAccBalance(state.accMap.adminExp, journal);
+  const netProfit = rev - pur - exp;
+  const cashTotal = getAccBalance(state.accMap.cash, journal) + getAccBalance(state.accMap.bank, journal);
+
+  document.getElementById('kpiSales').textContent = fmt(rev) + ' ' + baseCurr;
+  document.getElementById('kpiPurch').textContent = fmt(pur) + ' ' + baseCurr;
+  document.getElementById('kpiProfit').textContent = fmt(netProfit) + ' ' + baseCurr;
+  document.getElementById('kpiCash').textContent = fmt(cashTotal) + ' ' + baseCurr;
+  document.getElementById('kpiStock').textContent = fmt(totalStockVal) + ' ' + baseCurr;
+  document.getElementById('kpiBalance').textContent = Math.abs(totDr - totCr) < 0.05 ? 'متزن 100% ✓' : 'يوجد فرق ✗';
+
+  document.getElementById('finStatementsBox').innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-lbl">صافي الإيرادات</div><div class="kpi-val">${fmt(rev)} ${baseCurr}</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">صافي تكلفة المشتريات</div><div class="kpi-val">${fmt(pur)} ${baseCurr}</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">المصاريف والرواتب</div><div class="kpi-val">${fmt(exp)} ${baseCurr}</div></div>
+      <div class="kpi-card ok"><div class="kpi-lbl">صافي الربح النهائي</div><div class="kpi-val">${fmt(netProfit)} ${baseCurr}</div></div>
+    </div>`;
+
+  document.getElementById('lastBackupNote').textContent = state.settings.lastBackup ? ('آخر نسخة احتياطية: ' + state.settings.lastBackup) : 'تذكير: يوصى بتحميل نسخة احتياطية دورياً لحفظ بيانات السنوات الخمس.';
+  const alertsPanel = document.getElementById('adminAlertsPanel');
+  const alertsBox = document.getElementById('adminAlertsBox');
+  if (alertsPanel && alertsBox) {
+    const isMainAdmin = getCurrentUserObj().username === 'admin' || getCurrentUserObj().role === 'admin';
+    const alerts = state.adminAlerts || [];
+    if (isMainAdmin && alerts.length) {
+      alertsPanel.style.display = 'block';
+      alertsBox.innerHTML = alerts.map(a => `<div style="padding:4px 0;border-bottom:1px solid #eee;">🔔 <strong>${a.action}:</strong> ${a.target} — الصفة: <strong>${a.role}</strong> (بواسطة: ${a.by} في ${a.time})</div>`).join('');
+    } else {
+      alertsPanel.style.display = 'none';
+    }
+  }
+  const tblUsers = document.getElementById('tblUsers');
+  if (tblUsers) {
+    tblUsers.innerHTML = (state.users || []).map((u, idx) => {
+      const isActive = u.active !== false;
+      const toggleBtn = u.username === 'admin' ? '-' :
+        `<button class="btn ${isActive ? 'btn-danger' : 'btn-success'}" style="padding:3px 8px;font-size:11px;" onclick="toggleUserActive('${u.username}')">${isActive ? '⛔ إيقاف' : '✅ تفعيل'}</button>`;
+      return `<tr><td><strong>${u.username}</strong></td><td>${u.display}</td>
+      <td>${isActive ? '<span class="badge-ok">نشط</span>' : '<span class="badge-warn">موقوف</span>'}</td>
+      <td>${toggleBtn}</td>
+      <td>${u.role === 'admin' ? '<span class="badge-ok">مدير</span>' : 'حساب فرعي'}</td>
+      <td class="num">${u.pass}</td>
+      <td style="font-size:11px;">${u.role === 'admin' ? 'كامل الصلاحيات' : (u.perms || []).join('، ')}</td>
+      <td><button class="btn btn-steel" style="padding:3px 7px;font-size:11px;" onclick="editUserQuick('${u.username}')">✏️</button></td>
+      <td>${u.username === 'admin' ? '-' : `<button class="btn btn-danger" onclick="state.users.splice(${idx},1);saveState()">✕</button>`}</td></tr>`;
+    }).join('');
+  }
+  applyPermissionsUI();
+
+  document.getElementById('tblFiscalArchive').innerHTML = (state.fiscalArchive || []).map(f => `
+    <tr><td>${f.year}</td><td class="num">${fmt(f.rev)}</td><td class="num">${fmt(f.pur)}</td><td class="num">${fmt(f.profit)}</td><td>${f.closedAt}</td></tr>
+  `).join('') || '<tr><td colspan="5">لا توجد سنوات مقفلة بعد</td></tr>';
+}
+
+function saveManualJournal() {
+  const no = document.getElementById('mjNo').value.trim() || ('JV-' + ((state.manualJournals || []).length + 1));
+  const date = document.getElementById('mjDate').value || todayStr();
+  const drAcc = document.getElementById('mjDrAcc').value;
+  const crAcc = document.getElementById('mjCrAcc').value;
+  const amt = parseFloat(document.getElementById('mjAmt').value) || 0;
+  const desc = document.getElementById('mjDesc').value.trim();
+  if (!drAcc || !crAcc || amt <= 0) return showErpToast('يرجى اختيار الحساب المدين والدائن وإدخال مبلغ صحيح');
+  if (drAcc === crAcc) return showErpToast('لا يمكن أن يكون الحساب المدين والدائن متطابقين');
+  if (!state.manualJournals) state.manualJournals = [];
+  state.manualJournals.push({ id: Date.now(), no, date, drAcc, crAcc, amt, desc });
+  document.getElementById('mjNo').value = '';
+  document.getElementById('mjAmt').value = '0';
+  document.getElementById('mjDesc').value = '';
+  saveState();
+  showErpToast('تم ترحيل القيد اليدوي بنجاح ✓');
+}
+
+function clearJournalFilter() {
+  if (document.getElementById('jFromDate')) document.getElementById('jFromDate').value = '';
+  if (document.getElementById('jToDate')) document.getElementById('jToDate').value = '';
+  if (document.getElementById('jSearch')) document.getElementById('jSearch').value = '';
+  renderJournal();
+}
+
+function renderJournal() {
+  const q = (document.getElementById('jSearch')?.value || '').trim().toLowerCase();
+  const fromD = document.getElementById('jFromDate')?.value || '';
+  const toD = document.getElementById('jToDate')?.value || '';
+  const journal = getUnifiedJournal().filter(j => {
+    const matchText = !q || j.doc.toLowerCase().includes(q) || j.acc.includes(q) || j.desc.toLowerCase().includes(q);
+    const matchFrom = !fromD || j.date >= fromD;
+    const matchTo = !toD || j.date <= toD;
+    return matchText && matchFrom && matchTo;
+  });
+  document.getElementById('tblJournal').innerHTML = journal.map(j => {
+    const ac = state.coa.find(a => a.code === j.acc);
+    return `<tr><td>${j.src}</td><td>${j.date}</td><td>${j.doc}</td><td>${j.acc}</td>
+      <td style="text-align:right;font-weight:bold;">${ac ? ac.name : j.acc}</td><td style="text-align:right;">${j.desc}</td>
+      <td class="num">${fmt(j.dr)}</td><td class="num">${fmt(j.cr)}</td><td>${j.party}</td></tr>`;
+  }).join('');
+}
+
+function printSingleInv(id) {
+  navTo('print');
+  document.getElementById('prType').value = 'invoice';
+  document.getElementById('prInvSel').value = id;
+  renderPrintPreview();
+}
+
+function printPartyStmt(name) {
+  navTo('print');
+  document.getElementById('prType').value = 'statement';
+  document.getElementById('prPartySel').value = name;
+  renderPrintPreview();
+}
+
+function renderPrintPreview() {
+  const tp = document.getElementById('prType').value;
+  document.getElementById('prInvBox').style.display = tp === 'invoice' ? 'block' : 'none';
+  document.getElementById('prTplBox').style.display = tp === 'invoice' ? 'block' : 'none';
+  document.getElementById('prPartyBox').style.display = tp === 'statement' ? 'block' : 'none';
+  const box = document.getElementById('printArea');
+  const co = state.settings;
+
+  if (tp === 'invoice') {
+    const id = Number(document.getElementById('prInvSel').value);
+    const inv = state.invoices.find(i => i.id === id);
+    if (!inv) { box.innerHTML = '<p style="text-align:center;">لا توجد فاتورة محددة للطباعة.</p>'; return; }
+    const tpl = document.getElementById('prTemplate').value || co.invTemplate || 'classic';
+    const curr = inv.curr || co.currency;
+    const lines = inv.lines && inv.lines.length ? inv.lines : [{ itemCode: inv.itemCode, itemName: inv.itemName, qty: inv.qty, price: inv.price, disc: inv.disc, sub: inv.sub }];
+    const rowsHtml = lines.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.itemName}</td><td class="num">${l.qty}</td><td class="num">${fmt(l.price)}</td><td class="num">${fmt(l.disc)}</td><td class="num">${fmt(l.sub)}</td></tr>`).join('');
+
+    if (tpl === 'thermal') {
+      box.innerHTML = `
+        <div style="max-width:320px;margin:0 auto;border:1px dashed #333;padding:12px;font-size:12px;background:#fff;">
+          <div style="text-align:center;border-bottom:1px dashed #333;padding-bottom:8px;margin-bottom:8px;">
+            <strong style="font-size:15px;">${co.coName || 'القاق ERP'}</strong><br>
+            <span>${co.address || ''}</span><br>
+            <span>${inv.type === 'sale' ? 'إيصال مبيع' : 'إيصال شراء'} #${inv.no}</span>
+          </div>
+          <div style="margin-bottom:8px;">التاريخ: ${inv.date} | العميل: ${inv.party} | الدفع: ${inv.pay}</div>
+          <table style="min-width:100%;font-size:11px;">
+            <thead><tr><th>#</th><th>الصنف</th><th>ك</th><th>سعر</th><th>حسم</th><th>صافي</th></tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+          <div style="border-top:1px dashed #333;margin-top:8px;padding-top:6px;font-weight:bold;">
+            <div>قبل الضريبة: ${fmt(inv.sub)} ${curr}</div>
+            <div>الضريبة: ${fmt(inv.vat)} ${curr}</div>
+            <div style="font-size:14px;">الإجمالي: ${fmt(inv.net)} ${curr}</div>
+          </div>
+          <div style="text-align:center;margin-top:10px;font-size:10px;color:#555;">بإشراف المهندس محمد سليم القاق | 0994782834</div>
+        </div>`;
+    } else if (tpl === 'modern') {
+      box.innerHTML = `
+        <div style="background:linear-gradient(135deg,#7B1E3A,#2B547E);color:#fff;padding:16px;border-radius:6px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div><h2 style="margin:0;">${co.coName || 'المنشأة التجارية والصناعية'}</h2><div style="font-size:11px;opacity:0.9;">الرقم الضريبي: ${co.taxNo || '-'} | ${co.address || '-'}</div></div>
+          <div style="text-align:left;"><div style="font-size:16px;font-weight:bold;">${inv.type === 'sale' ? 'فاتورة مبيع' : 'فاتورة شراء'}</div><div style="font-size:12px;">رقم: ${inv.no}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#F8F9F9;padding:10px;border-radius:6px;margin-bottom:12px;font-weight:bold;">
+          <span>الطرف: ${inv.party}</span><span>التاريخ: ${inv.date}</span><span>الدفع: ${inv.pay} (${curr})</span>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>اسم المادة</th><th>الكمية</th><th>السعر</th><th>الحسم</th><th>الصافي</th></tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:18px;">
+          <div style="font-size:11px;color:#555;">توقيع المستلم: ___________________</div>
+          <div style="background:#FEF9E7;border:1px solid #D4AC0D;padding:10px 16px;border-radius:6px;font-weight:bold;text-align:left;">
+            <div>المجموع: ${fmt(inv.sub)} ${curr}</div>
+            <div>الضريبة (${co.vatRate}%): ${fmt(inv.vat)} ${curr}</div>
+            <div style="color:var(--maroon);font-size:16px;margin-top:4px;">الصافي المستحق: ${fmt(inv.net)} ${curr}</div>
+          </div>
+        </div>
+        <div style="margin-top:24px;border-top:1px solid #ddd;padding-top:8px;font-size:11px;text-align:center;color:#555;">
+          نظام المهندس للمحاسبة والمستودعات _ القاق ERP | إشراف المهندس محمد سليم القاق | 0994782834
+        </div>`;
+    } else {
+      box.innerHTML = `
+        <div style="border-bottom:3px solid var(--maroon);padding-bottom:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+          <div><h2 style="margin:0;color:var(--maroon);">${co.coName || 'المنشأة التجارية والصناعية'}</h2>
+          <div style="font-size:11px;color:#555;">الرقم الضريبي: ${co.taxNo || '-'} | ${co.address || '-'}</div></div>
+          <div style="background:var(--maroon);color:#fff;padding:8px 16px;border-radius:4px;font-weight:bold;">${inv.type === 'sale' ? 'فاتورة مبيع' : 'فاتورة شراء'}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-weight:bold;flex-wrap:wrap;gap:6px;">
+          <span>رقم الفاتورة: ${inv.no}</span><span>التاريخ: ${inv.date}</span><span>الطرف: ${inv.party}</span><span>الدفع: ${inv.pay} (${curr})</span>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>اسم المادة</th><th>الكمية</th><th>السعر</th><th>الحسم</th><th>الصافي</th></tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+        <div style="margin-top:15px;text-align:left;font-weight:bold;font-size:14px;">
+          <div>المجموع قبل الضريبة: ${fmt(inv.sub)} ${curr}</div>
+          <div>الضريبة (${co.vatRate}%): ${fmt(inv.vat)} ${curr}</div>
+          <div style="color:var(--maroon);font-size:16px;margin-top:4px;">صافي الفاتورة المستحق: ${fmt(inv.net)} ${curr}</div>
+        </div>
+        <div style="margin-top:30px;border-top:1px dashed #999;padding-top:8px;font-size:11px;text-align:center;color:#555;">
+          صادر عن نظام المهندس للمحاسبة والمستودعات _ القاق ERP | إشراف المهندس محمد سليم القاق | 0994782834
+        </div>`;
+    }
+  } else {
+    const name = document.getElementById('prPartySel').value;
+    const pt = state.parties.find(p => p.name === name);
+    if (!pt) { box.innerHTML = '<p style="text-align:center;">يرجى اختيار زبون أو مورد.</p>'; return; }
+    const journal = getUnifiedJournal().filter(j => j.party === name && (j.acc === state.accMap.customers || j.acc === state.accMap.suppliers));
+    let runBal = Number(pt.open) || 0;
+    const rows = journal.map(j => {
+      runBal += (pt.type === 'زبون' ? (j.dr - j.cr) : (j.cr - j.dr));
+      return `<tr><td>${j.src}</td><td>${j.date}</td><td>${j.doc}</td><td>${j.desc}</td><td class="num">${fmt(j.dr)}</td><td class="num">${fmt(j.cr)}</td><td class="num">${fmt(runBal)}</td></tr>`;
+    }).join('');
+    box.innerHTML = `
+      <div style="border-bottom:3px solid var(--maroon);padding-bottom:10px;margin-bottom:12px;">
+        <h2 style="margin:0;color:var(--maroon);">${co.coName || 'المنشأة'} — كشف حساب تفصيلي</h2>
+        <div style="margin-top:6px;font-weight:bold;">الحساب: ${pt.name} (${pt.type}) | الرصيد الافتتاحي: ${fmt(pt.open)} | الرصيد الختامي: ${fmt(runBal)} ${co.currency}</div>
+      </div>
+      <table>
+        <thead><tr><th>النوع</th><th>التاريخ</th><th>المستند</th><th>البيان</th><th>مدين</th><th>دائن</th><th>الرصيد</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="margin-top:30px;border-top:1px dashed #999;padding-top:8px;font-size:11px;text-align:center;color:#555;">
+        صادر عن نظام المهندس للمحاسبة والمستودعات _ القاق ERP | إشراف المهندس محمد سليم القاق | 0994782834
+      </div>`;
+  }
+}
+
+async function exportBackup() {
+  const jsonStr = JSON.stringify(state, null, 2);
+  const co = (state.settings.coName || 'ALKAK_ERP').replace(/[^\w\u0600-\u06FF-]+/g, '_');
+  const fname = `ALKAK_ERP_Backup_${co}_${todayStr()}.json`;
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: fname,
+        types: [{ description: 'ALKAK ERP Backup (JSON)', accept: { 'application/json': ['.json'] } }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(jsonStr);
+      await writable.close();
+      state.settings.lastBackup = new Date().toLocaleString('ar-SY');
+      saveState();
+      return showErpToast('تم حفظ النسخة الاحتياطية على الفلاشة / الذاكرة بنجاح ✓');
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+  const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  state.settings.lastBackup = new Date().toLocaleString('ar-SY');
+  saveState();
+  showErpToast('تم تنزيل ملف النسخة الاحتياطية بنجاح ✓ (يمكنك نقله للفلاشة أو كرت الذاكرة)');
+}
+
+function importBackup(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      state = JSON.parse(ev.target.result);
+      ensureStateDefaults();
+      saveState();
+      showErpToast('تمت استعادة النسخة الاحتياطية بنجاح ✓');
+    } catch { showErpToast('ملف النسخة الاحتياطية غير صالح'); }
+  };
+  reader.readAsText(file);
+}
+
+function closeFiscalYear() {
+  askErpConfirm('سيتم حفظ ملخص السنة الحالية في الأرشيف وتدوير الأرصدة الختامية للسنة الجديدة. هل تريد المتابعة؟', () => {
+    const journal = getUnifiedJournal();
+    const rev = getAccBalance(state.accMap.sales, journal) - getAccBalance(state.accMap.salesRet, journal);
+    const pur = getAccBalance(state.accMap.purch, journal) - getAccBalance(state.accMap.purchRet, journal);
+    const exp = getAccBalance(state.accMap.salaries, journal) + getAccBalance(state.accMap.adminExp, journal);
+    state.fiscalArchive.push({ year: state.settings.year, rev, pur, profit: rev - pur - exp, closedAt: todayStr() });
+
+    state.coa.forEach(a => {
+      if (['الموجودات', 'المطاليب', 'حقوق الملكية'].includes(a.group)) a.open = getAccBalance(a.code, journal);
+      else a.open = 0;
+    });
+    state.parties.forEach(p => { p.open = getPartyBalance(p.name); });
+    state.items.forEach(i => { i.open = getStockQty(i.code); });
+    state.invoices = [];
+    state.returns = [];
+    state.vouchers = [];
+    state.mfgOrders = [];
+    state.settings.year = String((parseInt(state.settings.year) || 2026) + 1);
+    saveState();
+    showErpToast('تم إقفال السنة وأرشفتها وتدوير الأرصدة بنجاح ✓');
+  });
+}
+
+let erpErrorLogs = [];
+function recordErpError(msg, src) {
+  const entry = {
+    time: new Date().toISOString(),
+    company: (state.settings && state.settings.coName) || 'غير محددة',
+    room: (state.settings && state.settings.fbRoom) || 'local',
+    user: state.currentUser || 'admin',
+    msg: String(msg || 'Unknown error'),
+    src: String(src || '')
+  };
+  erpErrorLogs.unshift(entry);
+  if (erpErrorLogs.length > 20) erpErrorLogs.pop();
+  try { localStorage.setItem('AlQaq_ERP_Errors', JSON.stringify(erpErrorLogs)); } catch (e) {}
+  refreshErrorLogView();
+  // Push error log to Firebase monitoring path if configured
+  const url = (state.settings && state.settings.fbUrl || '').trim().replace(/\/+$/, '');
+  if (url && url.startsWith('https://')) {
+    const room = (state.settings.fbRoom || 'alkak_main').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+    fetch(`${url}/alqaaq_erp_logs/${room}.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    }).catch(() => {});
+  }
+}
+
+window.addEventListener('error', (e) => {
+  recordErpError(e.message, (e.filename || '') + ':' + (e.lineno || ''));
+});
+window.addEventListener('unhandledrejection', (e) => {
+  recordErpError(e.reason && e.reason.message ? e.reason.message : String(e.reason), 'Promise');
+});
+
+function refreshErrorLogView() {}
+
+function sendSupportReport() {
+  const co = (state.settings && state.settings.coName) || 'غير محددة';
+  const room = (state.settings && state.settings.fbRoom) || 'محلي';
+  const bal = document.getElementById('kpiBalance') ? document.getElementById('kpiBalance').textContent : '-';
+  const lastErr = erpErrorLogs.length ? erpErrorLogs[0].msg : 'لا يوجد أخطاء مسجلة';
+  const msg = `تقرير دعم فني - القاق ERP%0Aالشركة: ${encodeURIComponent(co)}%0Aالمعرف: ${encodeURIComponent(room)}%0Aعدد الفواتير: ${state.invoices.length}%0Aتوازن اليومية: ${encodeURIComponent(bal)}%0Aآخر خطأ: ${encodeURIComponent(lastErr)}`;
+  window.open('https://wa.me/963994782834?text=' + msg, '_blank');
+}
+
+try {
+  const savedErrs = localStorage.getItem('AlQaq_ERP_Errors');
+  if (savedErrs) erpErrorLogs = JSON.parse(savedErrs);
+} catch (e) {}
+
+
+
+function getOrCreateDeviceId() {
+  let id = '';
+  try { id = localStorage.getItem('ALKAK_Device_ID') || ''; } catch (e) {}
+  if (!id) {
+    id = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    try { localStorage.setItem('ALKAK_Device_ID', id); } catch (e) {}
+  }
+  return id;
+}
+
+function getMasterFbUrl() {
+  return (state.settings.engMasterFbUrl || state.settings.fbUrl || '').trim().replace(/\/+$/, '');
+}
+
+function updateDeviceLockUI(status) {
+  const lock = document.getElementById('erpDeviceLock');
+  if (!lock) return;
+  if (!state.settings.deviceLockEnabled) {
+    lock.style.display = 'none';
+    return;
+  }
+  lock.style.display = (status === 'approved') ? 'none' : 'flex';
+}
+
+async function checkDeviceActivation(manual) {
+  const devId = getOrCreateDeviceId();
+  const devEl2 = document.getElementById('lockMyDevId');
+  if (devEl2) devEl2.textContent = devId;
+
+  let localStatus = 'pending';
+  try { localStatus = localStorage.getItem('ALKAK_Device_Status') || 'pending'; } catch (e) {}
+
+  const url = getMasterFbUrl();
+  if (url && url.startsWith('https://')) {
+    try {
+      const res = await fetch(`${url}/alkak_devices/${devId}.json`);
+      const data = res.ok ? await res.json() : null;
+      if (data && data.status) {
+        localStatus = data.status;
+        try { localStorage.setItem('ALKAK_Device_Status', localStatus); } catch (e) {}
+      } else {
+        // Register new device automatically as pending
+        await fetch(`${url}/alkak_devices/${devId}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            deviceId: devId,
+            company: state.settings.coName || 'شركة جديدة',
+            status: localStatus,
+            firstSeen: new Date().toISOString()
+          })
+        });
+      }
+    } catch (e) {}
+  }
+  updateDeviceLockUI(localStatus);
+  if (manual) showErpToast(localStatus === 'approved' ? 'تم تفعيل الجهاز ✓' : 'الجهاز ما زال بانتظار موافقة المهندس');
+}
+
+function requestDeviceWhatsApp() {
+  const devId = getOrCreateDeviceId();
+  const co = state.settings.coName || 'شركة جديدة';
+  const msg = `مرحباً مهندس محمد، أرجو تفعيل جهاز ALKAK ERP:%0Aالشركة: ${encodeURIComponent(co)}%0Aمعرف الجهاز: ${devId}`;
+  window.open('https://wa.me/963994782834?text=' + msg, '_blank');
+}
+
+function updateLicenseUI() {
+  const active = state.settings.licenseActive !== false;
+  const lock = document.getElementById('erpLicenseLock');
+  if (lock) lock.style.display = active ? 'none' : 'flex';
+}
+
+async function checkCompanyLicense(manual) {
+  const url = (state.settings.fbUrl || '').trim().replace(/\/+$/, '');
+  const room = (state.settings.fbRoom || 'alkak_main').trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+  if (url && url.startsWith('https://')) {
+    try {
+      const res = await fetch(`${url}/alqaaq_erp_license/${room}.json`);
+      if (res.ok) {
+        const lic = await res.json();
+        if (lic && typeof lic.active === 'boolean') {
+          state.settings.licenseActive = lic.active;
+          localStorage.setItem(DB_NAME, JSON.stringify(state));
+        }
+      }
+    } catch (e) {}
+  }
+  updateLicenseUI();
+  if (manual) {
+    showErpToast(state.settings.licenseActive !== false ? 'الترخيص مفعّل ✓' : 'الترخيص ما زال موقوفاً');
+  }
+}
+
+window.onload = function () {
+  initDB();
+  refreshErrorLogView();
+};
+</script>
+<div id="erpLoginModal" style="position:fixed;inset:0;background:rgba(15,23,42,0.92);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:10px;max-width:420px;width:100%;padding:20px;border-top:5px solid var(--maroon);box-shadow:0 12px 32px rgba(0,0,0,0.4);">
+    <h3 style="margin:0 0 6px;color:var(--maroon);font-size:16px;">🔐 تسجيل الدخول وتفعيل الحساب — ALKAK ERP</h3>
+    <p style="margin:0 0 10px;font-size:11px;color:var(--muted);line-height:1.6;">
+      ⚠️ <strong>إنشاء الحسابات يتم حصراً من لوحة التحكم.</strong> أدخل رقم هاتفك السوري وكلمة المرور، ثم الصق <strong>كود التفعيل</strong> المرسل إليك عبر واتساب من لوحة التحكم:
+    </p>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>رقم الهاتف السوري (مرتبط بواتساب)</label>
+      <input type="tel" id="loginPhone" class="form-control" placeholder="09XXXXXXXX" dir="ltr">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>اسم المستخدم</label>
+      <input type="text" id="loginUser" class="form-control" placeholder="admin" value="admin" dir="ltr">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" class="form-control" placeholder="••••" dir="ltr" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>كود تفعيل الحساب (من لوحة التحكم / واتساب)</label>
+      <input type="text" id="loginActCode" class="form-control" placeholder="ALK-XXXXXX" dir="ltr" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button type="button" id="loginCancelBtn" class="btn btn-gray" onclick="closeLoginModal()">إلغاء</button>
+      <button type="button" class="btn btn-primary" onclick="doLogin()">دخول وتفعيل الحساب ✓</button>
+    </div>
+  </div>
+</div>
+<div id="erpSetupWizardModal" style="position:fixed;inset:0;background:rgba(15,23,42,0.86);z-index:9996;display:none;align-items:center;justify-content:center;padding:14px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:10px;max-width:480px;width:100%;padding:18px;border-top:5px solid var(--maroon);box-shadow:0 12px 32px rgba(0,0,0,0.4);">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <h3 style="margin:0;color:var(--maroon);font-size:16px;">🏢 إنشاء حساب المدير وتأسيس الشركة</h3>
+      <button type="button" class="btn btn-steel" style="padding:4px 10px;font-size:11px;" onclick="switchWizardToLogin()">📱 دخول جهاز إضافي / موظف</button>
+    </div>
+    <p style="margin:0 0 10px;font-size:11px;color:var(--muted);">اربط حساب المدير ببريد <strong>Gmail</strong> رسمي لربط بقية الهواتف والحسابات الفرعية بنفس الشركة:</p>
+
+    <div style="background:#FEF9E7;border:1px solid #D4AC0D;border-radius:6px;padding:10px;margin-bottom:10px;">
+      <div class="form-grid" style="margin-bottom:0;">
+        <div class="form-group"><label>حساب Gmail المدير (مطلوب) *</label><input type="email" id="wizAdminGmail" class="form-control" placeholder="example@gmail.com" dir="ltr"></div>
+        <div class="form-group"><label>كلمة سر المدير (مطلوب) *</label><input type="password" id="wizAdminPass" class="form-control" placeholder="اختر كلمة سر قوية" dir="ltr"></div>
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:10px;">
+      <div class="form-group"><label>اسم الشركة / المنشأة</label><input type="text" id="wizCoName" class="form-control" placeholder="مثال: شركة النيل التجارية"></div>
+      <div class="form-group"><label>العملة الرئيسية</label>
+        <select id="wizCurr" class="form-control">
+          <option value="USD">USD ($) - دولار أمريكي</option>
+          <option value="SYP">SYP (ل.س) - ليرة سورية</option>
+          <option value="SAR">SAR (ر.س) - ريال سعودي</option>
+          <option value="TRY">TRY (₺) - ليرة تركية</option>
+          <option value="EUR">EUR (€) - يورو</option>
+        </select>
+      </div>
+      <div class="form-group"><label>نسبة الضريبة (%)</label><input type="number" id="wizVat" class="form-control" value="0" step="any"></div>
+      <div class="form-group"><label>السنة المالية</label><input type="text" id="wizYear" class="form-control" value="2026"></div>
+    </div>
+
+    <div style="background:#F8F9F9;border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:10px;">
+      <div style="font-weight:bold;color:var(--maroon);font-size:12px;margin-bottom:8px;">اختر نموذج دليل الحسابات (مثل برنامج الأمين):</div>
+      <label style="display:block;padding:7px;border:1px solid #85C1E9;background:#EBF5FB;border-radius:5px;margin-bottom:6px;cursor:pointer;font-size:12px;">
+        <input type="radio" name="wizCoaMode" value="alameen_trade" checked> <strong>1. دليل الأمين التجاري (مبيعات ومستودعات)</strong>
+        <div style="font-size:11px;color:#34495E;margin-top:2px;">شجرة تبدأ من 1 بسعة 6 أرقام لكل حساب (تتسع لآلاف الزبائن والمواد والحسابات الفرعية).</div>
+      </label>
+      <label style="display:block;padding:7px;border:1px solid #CBD5E1;background:#fff;border-radius:5px;margin-bottom:6px;cursor:pointer;font-size:12px;">
+        <input type="radio" name="wizCoaMode" value="alameen_ind"> <strong>2. دليل الأمين الصناعي (مصانع وتصنيع وخامات)</strong>
+        <div style="font-size:11px;color:#34495E;margin-top:2px;">يشمل حسابات الخامات، الإنتاج التام، أجور التصنيع، والصيانة الصناعية.</div>
+      </label>
+      <label style="display:block;padding:7px;border:1px solid #CBD5E1;background:#fff;border-radius:5px;margin-bottom:6px;cursor:pointer;font-size:12px;">
+        <input type="radio" name="wizCoaMode" value="alameen_srv"> <strong>3. دليل الأمين الخدمي (خدمات ومقاولات)</strong>
+        <div style="font-size:11px;color:#34495E;margin-top:2px;">مخصص لشركات الخدمات والمكاتب مع حسابات الإيرادات والمشاريع.</div>
+      </label>
+      <label style="display:block;padding:7px;border:1px solid #CBD5E1;background:#fff;border-radius:5px;cursor:pointer;font-size:12px;">
+        <input type="radio" name="wizCoaMode" value="empty"> <strong>4. دليل حسابات فارغ بالكامل (تأسيس حر)</strong>
+        <div style="font-size:11px;color:#566573;margin-top:2px;">تبدأ الشركة بدليل فارغ وتضيف حساباتها وأرقامها كما تشاء.</div>
+      </label>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:12px;">
+      <div class="form-group">
+        <label>سعة الأرقام للحسابات الفرعية</label>
+        <select id="wizDigits" class="form-control">
+          <option value="6" selected>6 أرقام (قياسي — يتسع حتى 9,999 فرع)</option>
+          <option value="8">8 أرقام (موسّع — يتسع حتى 999,999 فرع)</option>
+          <option value="4">4 أرقام (مختصر — يتسع حتى 99 فرع)</option>
+        </select>
+      </div>
+      <div class="form-group" style="display:flex;align-items:flex-end;">
+        <label style="cursor:pointer;font-weight:bold;font-size:12px;margin-bottom:6px;">
+          <input type="checkbox" id="wizAutoCodes" checked> ترقيم آلي للمواد والزبائن والموردين
+        </label>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <button type="button" class="btn btn-primary" onclick="finishSetupWizard()">🚀 اعتماد وبدء العمل</button>
+    </div>
+  </div>
+</div>
+<div id="erpDeviceLock" style="position:fixed;inset:0;background:linear-gradient(135deg,#1e3a5f,#17202A);color:#fff;z-index:9997;display:none;align-items:center;justify-content:center;padding:20px;text-align:center;">
+  <div style="max-width:420px;width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,0.4);">
+    <div style="font-size:38px;margin-bottom:10px;cursor:pointer;user-select:none;">🔐</div>
+    <h2 style="margin:0 0 8px;font-size:18px;color:#F9EBEA;">بانتظار تفعيل الجهاز</h2>
+    <p style="font-size:12px;line-height:1.8;color:#E5E7E9;margin:0 0 12px;">
+      هذا الجهاز غير مفعّل بعد لاستخدام <strong>ALKAK ERP</strong>. أرسل معرّف الجهاز إلى <strong>المهندس محمد سليم القاق</strong> لتفعيله فوراً:
+    </p>
+    <div id="lockMyDevId" style="background:rgba(0,0,0,0.35);padding:8px 12px;border-radius:8px;font-family:monospace;font-size:15px;font-weight:bold;color:#D4AC0D;margin-bottom:14px;direction:ltr;">DEV-0000</div>
+    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+      <button type="button" class="btn btn-success" onclick="requestDeviceWhatsApp()">📲 طلب التفعيل (واتساب)</button>
+      <button type="button" class="btn btn-steel" onclick="checkDeviceActivation(true)">🔄 التحقق من التفعيل</button>
+    </div>
+  </div>
+</div>
+<div id="erpLicenseLock" style="position:fixed;inset:0;background:linear-gradient(135deg,#5A1228,#17202A);color:#fff;z-index:9997;display:none;align-items:center;justify-content:center;padding:20px;text-align:center;">
+  <div style="max-width:420px;width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,0.4);">
+    <div style="font-size:38px;margin-bottom:10px;cursor:pointer;user-select:none;">⛔</div>
+    <h2 style="margin:0 0 10px;font-size:18px;color:#F9EBEA;">تم إيقاف ترخيص النظام مؤقتاً</h2>
+    <p style="font-size:13px;line-height:1.8;color:#E5E7E9;margin:0 0 16px;">
+      يرجى مراجعة الإدارة أو التواصل مع <strong>المهندس محمد سليم القاق</strong> لتفعيل النسخة:
+      <br><strong style="font-size:16px;color:#D4AC0D;direction:ltr;display:inline-block;margin-top:6px;">0994782834</strong>
+    </p>
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <a href="https://wa.me/963994782834" target="_blank" rel="noopener noreferrer" class="btn btn-success" style="text-decoration:none;">💬 تواصل عبر واتساب</a>
+      <button type="button" class="btn btn-steel" onclick="checkCompanyLicense(true)">🔄 التحقق من التفعيل</button>
+    </div>
+  </div>
+</div>
+<div id="erpToast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#17202A;color:#fff;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:bold;z-index:9999;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
+<div id="erpConfirmModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:8px;max-width:380px;width:100%;padding:16px;border-top:4px solid var(--maroon);box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+    <div id="erpConfirmText" style="font-size:13px;font-weight:bold;color:var(--text);margin-bottom:14px;line-height:1.6;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <button type="button" class="btn btn-gray" onclick="closeErpConfirm(false)">إلغاء</button>
+      <button type="button" class="btn btn-primary" onclick="closeErpConfirm(true)">تأكيد</button>
+    </div>
+  </div>
+</div>
+<script>
+let _erpConfirmCb = null;
+function showErpToast(msg) {
+  const el = document.getElementById('erpToast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(showErpToast._t);
+  showErpToast._t = setTimeout(() => { el.style.display = 'none'; }, 2800);
+}
+function askErpConfirm(msg, cb) {
+  _erpConfirmCb = cb;
+  document.getElementById('erpConfirmText').textContent = msg;
+  document.getElementById('erpConfirmModal').style.display = 'flex';
+}
+function closeErpConfirm(ok) {
+  document.getElementById('erpConfirmModal').style.display = 'none';
+  if (ok && typeof _erpConfirmCb === 'function') _erpConfirmCb();
+  _erpConfirmCb = null;
+}
+
+// ===== مساعد الذكاء الاصطناعي في المحاسبة =====
+function clearAiChat() {
+  const box = document.getElementById('aiChatBox');
+  if (!box) return;
+  box.innerHTML = `<div style="align-self:flex-start;max-width:88%;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6;color:#0f172a;">
+    <strong>🤖 المساعد المحاسبي الذكي:</strong><br>تم مسح سجل المحادثة. يمكنك طرح سؤالك المحاسبي الآن.
+  </div>`;
+}
+
+function appendAiMsg(role, htmlText) {
+  const box = document.getElementById('aiChatBox');
+  if (!box) return;
+  const div = document.createElement('div');
+  const isUser = role === 'user';
+  div.style.cssText = isUser
+    ? 'align-self:flex-end;max-width:85%;background:#7B1E3A;color:#ffffff;border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.6;'
+    : 'align-self:flex-start;max-width:90%;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.65;color:#0f172a;';
+  div.innerHTML = htmlText;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function askAiQuick(q) {
+  const inp = document.getElementById('aiQuestionInput');
+  if (inp) inp.value = q;
+  sendAiQuestion();
+}
+
+function computeAccountingSnapshot() {
+  const salesInvs = (state.invoices || []).filter(i => i.type === 'sale');
+  const purchInvs = (state.invoices || []).filter(i => i.type === 'purch');
+  const totalSales = salesInvs.reduce((a, i) => a + (Number(i.netTotal) || 0), 0);
+  const totalPurch = purchInvs.reduce((a, i) => a + (Number(i.netTotal) || 0), 0);
+  const totalSalesNet = salesInvs.reduce((a, i) => a + (Number(i.subTotal) || 0), 0);
+  const totalPurchNet = purchInvs.reduce((a, i) => a + (Number(i.subTotal) || 0), 0);
+
+  let stockQty = 0, stockVal = 0, lowStock = [];
+  (state.items || []).forEach(it => {
+    const qty = typeof getItemStock === 'function' ? getItemStock(it.code) : (Number(it.openQty) || 0);
+    const cost = Number(it.cost) || 0;
+    stockQty += qty;
+    stockVal += qty * cost;
+    if (qty <= 5) lowStock.push(`${it.name} (${qty})`);
+  });
+
+  const journal = typeof getUnifiedJournal === 'function' ? getUnifiedJournal() : [];
+  let sumDr = 0, sumCr = 0;
+  const accBal = {};
+  journal.forEach(e => {
+    const d = Number(e.dr) || 0, c = Number(e.cr) || 0;
+    sumDr += d; sumCr += c;
+    accBal[e.acc] = (accBal[e.acc] || 0) + (d - c);
+  });
+
+  const cashAcc = (state.accMap && state.accMap.cash) || '1101';
+  const bankAcc = (state.accMap && state.accMap.bank) || '1102';
+  const arAcc = (state.accMap && state.accMap.ar) || '1103';
+  const apAcc = (state.accMap && state.accMap.ap) || '2101';
+
+  const cashBal = accBal[cashAcc] || 0;
+  const bankBal = accBal[bankAcc] || 0;
+  const arBal = accBal[arAcc] || 0;
+  const apBal = -(accBal[apAcc] || 0);
+
+  const expenses = (state.vouchers || []).filter(v => v.type === 'pay' && !v.party).reduce((a, v) => a + (Number(v.amount) || 0), 0);
+  const estProfit = totalSalesNet - totalPurchNet - expenses;
+  const curr = (state.settings && state.settings.currency) || 'USD';
+
+  return {
+    coName: (state.settings && state.settings.coName) || 'الشركة (غير مسماة بعد)',
+    curr,
+    salesCount: salesInvs.length,
+    purchCount: purchInvs.length,
+    totalSales, totalPurch, totalSalesNet, totalPurchNet,
+    itemsCount: (state.items || []).length,
+    partiesCount: (state.parties || []).length,
+    stockQty, stockVal, lowStock,
+    journalCount: journal.length,
+    sumDr, sumCr,
+    balanced: Math.abs(sumDr - sumCr) < 0.01,
+    cashBal, bankBal, arBal, apBal, expenses, estProfit
+  };
+}
+
+function localAccountingAI(qRaw) {
+  const q = (qRaw || '').trim().toLowerCase();
+  const snap = computeAccountingSnapshot();
+  const fmt = n => Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + snap.curr;
+
+  if (q.includes('ملخص') || q.includes('وضع') || q.includes('تقرير') || q.includes('إجمالي')) {
+    return `<strong>📊 ملخص الوضع المالي الحالي (${snap.coName}):</strong><br>
+    • <strong>فواتير المبيع:</strong> ${snap.salesCount} فاتورة بإجمالي <strong>${fmt(snap.totalSales)}</strong><br>
+    • <strong>فواتير الشراء:</strong> ${snap.purchCount} فاتورة بإجمالي <strong>${fmt(snap.totalPurch)}</strong><br>
+    • <strong>قيمة المخزون الحالية:</strong> <strong>${fmt(snap.stockVal)}</strong> (${snap.itemsCount} مادة)<br>
+    • <strong>السيولة (صندوق + مصرف):</strong> <strong>${fmt(snap.cashBal + snap.bankBal)}</strong><br>
+    • <strong>صافي الربح التقديري:</strong> <strong>${fmt(snap.estProfit)}</strong><br>
+    • <strong>توازن القيود:</strong> ${snap.balanced ? 'متزن 100% ✅' : 'يوجد فرق ⚠️'}`;
+  }
+  if (q.includes('صندوق') || q.includes('مصرف') || q.includes('بنك') || q.includes('سيولة') || q.includes('نقد')) {
+    return `<strong>💵 تحليل السيولة النقدية:</strong><br>
+    • <strong>رصيد الصندوق الرئيسي:</strong> ${fmt(snap.cashBal)}<br>
+    • <strong>رصيد المصرف / البنك:</strong> ${fmt(snap.bankBal)}<br>
+    • <strong>إجمالي السيولة المتاحة:</strong> <strong>${fmt(snap.cashBal + snap.bankBal)}</strong>`;
+  }
+  if (q.includes('مخزون') || q.includes('بضاع') || q.includes('مواد') || q.includes('جرد') || q.includes('نفد')) {
+    const lowTxt = snap.lowStock.length ? snap.lowStock.slice(0, 6).join('، ') : 'لا توجد مواد منخفضة الرصيد حالياً';
+    return `<strong>📦 تحليل المخزون والمستودع:</strong><br>
+    • <strong>عدد البطاقات المسجلة:</strong> ${snap.itemsCount} مادة<br>
+    • <strong>إجمالي الكميات المتوفرة:</strong> ${snap.stockQty.toLocaleString('en-US')} وحدة<br>
+    • <strong>القيمة التقديرية بسعر التكلفة:</strong> <strong>${fmt(snap.stockVal)}</strong><br>
+    • <strong>تنبيه المواد (≤ 5):</strong> ${lowTxt}`;
+  }
+  if (q.includes('ذمم') || q.includes('زبون') || q.includes('زبائن') || q.includes('مورد') || q.includes('دين')) {
+    return `<strong>👥 تحليل الذمم المدينة والدائنة:</strong><br>
+    • <strong>البطاقات المسجلة:</strong> ${snap.partiesCount} زبون/مورد<br>
+    • <strong>ذمم الزبائن (لنا):</strong> <strong>${fmt(snap.arBal)}</strong><br>
+    • <strong>ذمم الموردين (علينا):</strong> <strong>${fmt(snap.apBal)}</strong><br>
+    • <strong>صافي مركز الذمم:</strong> ${fmt(snap.arBal - snap.apBal)}`;
+  }
+  if (q.includes('توازن') || q.includes('يومية') || q.includes('ميزان') || q.includes('ربح') || q.includes('خسار')) {
+    return `<strong>⚖️ فحص التوازن المحاسبي والربحية:</strong><br>
+    • <strong>عدد قيود اليومية الآلية:</strong> ${snap.journalCount} قيد<br>
+    • <strong>مجموع المدين:</strong> ${fmt(snap.sumDr)} | <strong>مجموع الدائن:</strong> ${fmt(snap.sumCr)}<br>
+    • <strong>حالة التوازن:</strong> ${snap.balanced ? 'متزن 100% ✅' : 'غير متزن ⚠️'}<br>
+    • <strong>صافي الربح التقديري (المبيعات - المشتريات - المصاريف):</strong> <strong>${fmt(snap.estProfit)}</strong>`;
+  }
+  if (q.includes('قيد') || q.includes('قيود') || q.includes('شرح') || q.includes('مبيع') || q.includes('شراء')) {
+    return `<strong>📒 شرح القيود المحاسبية الأساسية في النظام:</strong><br>
+    1. <strong>فاتورة مبيع نقدية:</strong> من حـ/ الصندوق (1101) إلى مذكورين حـ/ المبيعات (4101) وحـ/ ضريبة المخرجات (إن وجدت).<br>
+    2. <strong>فاتورة مبيع آجلة:</strong> من حـ/ الزبون (1103) إلى حـ/ المبيعات (4101).<br>
+    3. <strong>فاتورة شراء نقدية/آجلة:</strong> من حـ/ المشتريات (5102) إلى حـ/ الصندوق (1101) أو حـ/ المورد (2101).<br>
+    4. <strong>سند قبض من زبون:</strong> من حـ/ الصندوق إلى حـ/ الزبون.`;
+  }
+  if (q.includes('إقفال') || q.includes('سنة') || q.includes('بداية') || q.includes('ابدأ')) {
+    return `<strong>⚙️ خطوات البدء وإقفال السنة المالية:</strong><br>
+    • ابدأ من <strong>الثوابت والنسخ</strong> لضبط اسم الشركة والعملة والضريبة.<br>
+    • أضف بطاقات <strong>المواد والمستودع</strong> مع أرصدة أول المدة، وبطاقات <strong>الزبائن والموردين</strong>.<br>
+    • عند نهاية العام، استخدم ميزة <strong>إقفال السنة المالية</strong> في الإعدادات لترحيل الأرصدة الختامية كأرصدة افتتاحية للسنة الجديدة.`;
+  }
+  return `<strong>🤖 المساعد المحاسبي الذكي:</strong><br>
+  فهمت سؤالك: "<em>${(qRaw || '').replace(/</g, '&lt;')}</em>".<br>
+  بناءً على بياناتك الحالية (${snap.salesCount} مبيع، ${snap.purchCount} شراء، ${snap.itemsCount} مادة):<br>
+  • إجمالي المبيعات: <strong>${fmt(snap.totalSales)}</strong> | إجمالي المشتريات: <strong>${fmt(snap.totalPurch)}</strong> | السيولة: <strong>${fmt(snap.cashBal + snap.bankBal)}</strong>.<br>
+  جرب سؤالي عن: <em>ملخص الوضع المالي، الصندوق، المخزون، الذمم، توازن اليومية، أو شرح القيود</em>.`;
+}
+
+async function sendAiQuestion() {
+  const inp = document.getElementById('aiQuestionInput');
+  if (!inp) return;
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  appendAiMsg('user', q.replace(/</g, '&lt;'));
+  appendAiMsg('ai', localAccountingAI(q));
+}
+</script>
+</body>
+</html>
